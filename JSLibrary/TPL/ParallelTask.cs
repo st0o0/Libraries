@@ -31,7 +31,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            List<OutputType> outputs = new();
+            ICollection<OutputType> outputs = new List<OutputType>();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -57,7 +57,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            List<OutputType> outputs = new();
+            ICollection<OutputType> outputs = new List<OutputType>();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -89,7 +89,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            List<OutputType> outputs = new();
+            ICollection<OutputType> outputs = new List<OutputType>();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -121,7 +121,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            List<OutputType> outputs = new();
+            ICollection<OutputType> outputs = new List<OutputType>();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
