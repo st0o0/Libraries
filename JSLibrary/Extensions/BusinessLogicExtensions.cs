@@ -23,7 +23,7 @@ namespace JSLibrary.Extensions
 
         #region GetMany
 
-        public static async Task<IQueryable<ModelType>> GetManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<int> ids, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
+        public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<int> ids, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
             return (await businessLogic.LoadAsync(cancellationToken)).Where(x => ids.Any(y => y == x.Id));
         }

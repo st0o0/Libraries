@@ -20,9 +20,9 @@ namespace JSLibrary.BusinessLogic.Interfaces
 
         Task<ModelType> GetAsync(int Id, CancellationToken cancellationToken = default);
 
-        IQueryable<ModelType> Load();
+        IEnumerable<ModelType> Load();
 
-        Task<IQueryable<ModelType>> LoadAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<ModelType>> LoadAsync(CancellationToken cancellationToken = default);
 
         void Delete(ModelType model);
 
