@@ -46,15 +46,12 @@ namespace JSLibrary.BusinessLogic
             return await Task.Run(() => Get(Id), cancellationToken);
         }
 
-        public virtual IQueryable<ModelType> Load()
+        public virtual IEnumerable<ModelType> Load()
         {
-            return DataContext
-                .Set<ModelType>()
-                .AsQueryable()
-                .AsNoTracking();
+            return DataContext.Set<ModelType>();
         }
 
-        public virtual async Task<IQueryable<ModelType>> LoadAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<ModelType>> LoadAsync(CancellationToken cancellationToken = default)
         {
             return await Task.Run(() => { return Load(); }, cancellationToken);
         }
