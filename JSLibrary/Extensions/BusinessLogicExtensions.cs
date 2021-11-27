@@ -11,7 +11,7 @@ namespace JSLibrary.Extensions
 {
     public static class BusinessLogicExtensions
     {
-        public static async Task<IEnumerable<int>> AddAsync<ModelType, DBContextType>(this BusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext, new() where ModelType : class, IDBModel
+        public static async Task<IEnumerable<int>> AddAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext, new() where ModelType : class, IDBModel
         {
             return await ParallelTask.TaskManyAsync(items, x => businessLogic.AddAsync(x, cancellationToken), cancellationToken, 1);
         }
