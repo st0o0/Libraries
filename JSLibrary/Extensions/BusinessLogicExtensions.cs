@@ -21,7 +21,7 @@ namespace JSLibrary.Extensions
             return (await businessLogic.LoadAsync(cancellationToken)).Where(x => ids.Any(y => y == x.Id));
         }
 
-        public static async Task DeleteAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default, int degree = 5) where DBContextType : DbContext where ModelType : class, IDBModel
+        public static async Task DeleteAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, int degree = 5, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
             await ParallelTask.TaskManyAsync(items, x => businessLogic.DeleteAsync(x, cancellationToken), cancellationToken, degree);
         }
