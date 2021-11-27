@@ -13,7 +13,7 @@ namespace JSLibrary.Extensions
     {
         public static async Task<IEnumerable<int>> AddAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext, new() where ModelType : class, IDBModel
         {
-            return await ParallelTask.TaskManyAsync(items, x => businessLogic.AddAsync(x, cancellationToken), cancellationToken, 1);
+            return await ParallelTask.TaskManyAsync(items, x => businessLogic.AddAsync(x, cancellationToken), 1, cancellationToken);
         }
 
         public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<int> ids, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
@@ -23,7 +23,7 @@ namespace JSLibrary.Extensions
 
         public static async Task DeleteAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, int degree = 5, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
-            await ParallelTask.TaskManyAsync(items, x => businessLogic.DeleteAsync(x, cancellationToken), cancellationToken, degree);
+            await ParallelTask.TaskManyAsync(items, x => businessLogic.DeleteAsync(x, cancellationToken), degree, cancellationToken);
         }
     }
 }
