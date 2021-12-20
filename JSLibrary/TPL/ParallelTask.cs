@@ -22,7 +22,7 @@ namespace JSLibrary.TPL
 
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> inputs, Func<InputType, OutputType> func, int degreeParallel = 5, CancellationToken cancellationToken = default)
         {
-            TransformBlock<InputType, OutputType> transformBlock = new(func, new() { MaxDegreeOfParallelism = 5, CancellationToken = cancellationToken });
+            TransformBlock<InputType, OutputType> transformBlock = new(func, new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken });
 
             inputs.ToList().ForEach(async x => await transformBlock.SendAsync(x, cancellationToken));
 
@@ -48,7 +48,7 @@ namespace JSLibrary.TPL
 
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> inputs, Func<InputType, Task<OutputType>> func, int degreeParallel = 5, CancellationToken cancellationToken = default)
         {
-            TransformBlock<InputType, OutputType> transformBlock = new(func, new() { MaxDegreeOfParallelism = 5, CancellationToken = cancellationToken });
+            TransformBlock<InputType, OutputType> transformBlock = new(func, new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken });
 
             inputs.ToList().ForEach(async x => await transformBlock.SendAsync(x, cancellationToken));
 
