@@ -13,7 +13,7 @@ namespace JSLibrary.TPL
         {
             ActionBlock<InputType> actionBlock = new(action, new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken });
 
-            inputs.ToList().ForEach(async x => await actionBlock.SendAsync(x, cancellationToken));
+            inputs.ToList().ForEach(x => actionBlock.SendAsync(x, cancellationToken));
 
             actionBlock.Complete();
 
@@ -26,7 +26,7 @@ namespace JSLibrary.TPL
 
             TransformBlock<InputType, OutputType> transformBlock = new(func, edflbo);
 
-            inputs.ToList().ForEach(async x => await transformBlock.SendAsync(x, cancellationToken));
+            inputs.ToList().ForEach(x => transformBlock.Post(x));
 
             transformBlock.Complete();
 
@@ -38,12 +38,12 @@ namespace JSLibrary.TPL
             {
                 for (int i = 0; i < transformBlock.OutputCount; i++)
                 {
-                    outputs.Add(await transformBlock.ReceiveAsync(cancellationToken));
+                    outputs.Add(transformBlock.Receive());
                 }
             }
             else
             {
-                throw new Exception("Weniger Output als Input");
+                throw new Exception();
             }
             return outputs;
         }
@@ -54,7 +54,7 @@ namespace JSLibrary.TPL
 
             TransformBlock<InputType, OutputType> transformBlock = new(func, edflbo);
 
-            inputs.ToList().ForEach(async x => await transformBlock.SendAsync(x, cancellationToken));
+            inputs.ToList().ForEach(x => transformBlock.SendAsync(x, cancellationToken));
 
             transformBlock.Complete();
 
@@ -66,12 +66,12 @@ namespace JSLibrary.TPL
             {
                 for (int i = 0; i < transformBlock.OutputCount; i++)
                 {
-                    outputs.Add(await transformBlock.ReceiveAsync(cancellationToken));
+                    outputs.Add(transformBlock.Receive());
                 }
             }
             else
             {
-                throw new Exception("Weniger Output als Input");
+                throw new Exception();
             }
             return outputs;
         }
@@ -86,7 +86,7 @@ namespace JSLibrary.TPL
 
             transformManyBlock.LinkTo(transformBlock, new() { PropagateCompletion = true });
 
-            inputs.ToList().ForEach(async x => await transformManyBlock.SendAsync(x, cancellationToken));
+            inputs.ToList().ForEach(x => transformManyBlock.SendAsync(x, cancellationToken));
 
             transformManyBlock.Complete();
 
@@ -98,12 +98,12 @@ namespace JSLibrary.TPL
             {
                 for (int i = 0; i < transformBlock.OutputCount; i++)
                 {
-                    outputs.Add(await transformBlock.ReceiveAsync(cancellationToken));
+                    outputs.Add(transformBlock.Receive(cancellationToken));
                 }
             }
             else
             {
-                throw new Exception("Weniger Output als Input");
+                throw new Exception();
             }
             return outputs;
         }
@@ -118,7 +118,7 @@ namespace JSLibrary.TPL
 
             transformManyBlock.LinkTo(transformBlock, new() { PropagateCompletion = true });
 
-            inputs.ToList().ForEach(async x => await transformManyBlock.SendAsync(x, cancellationToken));
+            inputs.ToList().ForEach(x => transformManyBlock.SendAsync(x, cancellationToken));
 
             transformManyBlock.Complete();
 
@@ -130,12 +130,12 @@ namespace JSLibrary.TPL
             {
                 for (int i = 0; i < transformBlock.OutputCount; i++)
                 {
-                    outputs.Add(await transformBlock.ReceiveAsync(cancellationToken));
+                    outputs.Add(transformBlock.Receive(cancellationToken));
                 }
             }
             else
             {
-                throw new Exception("Weniger Output als Input");
+                throw new Exception();
             }
             return outputs;
         }
