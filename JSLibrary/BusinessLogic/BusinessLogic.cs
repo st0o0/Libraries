@@ -25,11 +25,6 @@ namespace JSLibrary.BusinessLogic
             return DateTime.UtcNow;
         }
 
-        public void SaveChanges()
-        {
-            DataContext.SaveChanges();
-        }
-
         public void Dispose()
         {
             GC.SuppressFinalize(this);
