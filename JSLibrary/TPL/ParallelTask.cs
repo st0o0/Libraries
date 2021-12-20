@@ -30,7 +30,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            List<OutputType> outputs = new List<OutputType>();
+            List<OutputType> outputs = new();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -56,7 +56,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            ICollection<OutputType> outputs = new List<OutputType>();
+            List<OutputType> outputs = new();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -67,7 +67,7 @@ namespace JSLibrary.TPL
             }
             else
             {
-                throw new Exception();
+                throw new Exception("Weniger Output als Input");
             }
             return outputs;
         }
@@ -88,7 +88,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            ICollection<OutputType> outputs = new List<OutputType>();
+            List<OutputType> outputs = new();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -99,7 +99,7 @@ namespace JSLibrary.TPL
             }
             else
             {
-                throw new Exception();
+                throw new Exception("Weniger Output als Input");
             }
             return outputs;
         }
@@ -120,7 +120,7 @@ namespace JSLibrary.TPL
 
             await transformBlock.Completion;
 
-            ICollection<OutputType> outputs = new List<OutputType>();
+            List<OutputType> outputs = new();
 
             if (transformBlock.InputCount == transformBlock.OutputCount)
             {
@@ -131,7 +131,7 @@ namespace JSLibrary.TPL
             }
             else
             {
-                throw new Exception();
+                throw new Exception("Weniger Output als Input");
             }
             return outputs;
         }
