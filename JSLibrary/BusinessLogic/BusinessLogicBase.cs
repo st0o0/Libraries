@@ -30,7 +30,7 @@ namespace JSLibrary.BusinessLogic
 
         public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            await Task.Run(() => Add(model), cancellationToken);
+            await Task.Run(() => Delete(model), cancellationToken);
         }
 
         public virtual ModelType Get(int Id)
