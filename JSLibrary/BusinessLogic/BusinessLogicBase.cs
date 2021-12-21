@@ -15,6 +15,7 @@ namespace JSLibrary.BusinessLogic
         public virtual int Add(ModelType model)
         {
             DataContext.Add(model);
+            DataContext.SaveChanges();
             return model.Id;
         }
 
@@ -26,6 +27,7 @@ namespace JSLibrary.BusinessLogic
         public virtual void Delete(ModelType model)
         {
             DataContext.Remove(model);
+            DataContext.SaveChanges();
         }
 
         public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
@@ -56,6 +58,7 @@ namespace JSLibrary.BusinessLogic
         public virtual void Update(ModelType model)
         {
             DataContext.Update(model);
+            DataContext.SaveChanges();
         }
 
         public virtual async Task UpdateAsync(ModelType model, CancellationToken cancellationToken = default)
