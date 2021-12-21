@@ -8,7 +8,7 @@ namespace JSLibrary.BusinessLogic
 {
     public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext, new() where ModelType : class, IDBModel
     {
-        public BusinessLogicBase(DBContextType dBContext = null) : base(dBContext)
+        public BusinessLogicBase(DBContextType dBContext) : base(dBContext)
         {
         }
 
