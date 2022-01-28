@@ -6,28 +6,27 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.BusinessLogic
 {
-    public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext, new() where ModelType : class, IDBModel
+    public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext, new() where ModelType : class, new()
     {
         public BusinessLogicBase(DBContextType dBContext) : base(dBContext)
         {
         }
 
-        public virtual int Add(ModelType model)
+        public virtual void Add(ModelType model)
         {
             DataContext.Add(model);
-            DataContext.SaveChanges();
-            return model.Id;
+            SaveChanges();
         }
 
-        public virtual async Task<int> AddAsync(ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task AddAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Add(model), cancellationToken);
+            await Task.Run(() => Add(model), cancellationToken);
         }
 
         public virtual void Delete(ModelType model)
         {
             DataContext.Remove(model);
-            DataContext.SaveChanges();
+            SaveChanges();
         }
 
         public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
@@ -40,9 +39,9 @@ namespace JSLibrary.BusinessLogic
             return DataContext.Find<ModelType>(Id);
         }
 
-        public virtual async Task<ModelType> GetAsync(int Id, CancellationToken cancellationToken = default)
+        public virtual async Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Get(Id), cancellationToken);
+            return await Task.Run(() => Get(id), cancellationToken);
         }
 
         public virtual IEnumerable<ModelType> Load()
@@ -58,7 +57,7 @@ namespace JSLibrary.BusinessLogic
         public virtual void Update(ModelType model)
         {
             DataContext.Update(model);
-            DataContext.SaveChanges();
+            SaveChanges();
         }
 
         public virtual async Task UpdateAsync(ModelType model, CancellationToken cancellationToken = default)

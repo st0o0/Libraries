@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.BusinessLogic.Interfaces
 {
-    public interface IBusinessLogicBase<ModelType, DBContextType> where ModelType : class, IDBModel where DBContextType : DbContext
+    public interface IBusinessLogicBase<ModelType, DBContextType> where ModelType : class, new() where DBContextType : DbContext
     {
-        int Add(ModelType model);
+        void Add(ModelType model);
 
-        Task<int> AddAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task AddAsync(ModelType model, CancellationToken cancellationToken = default);
 
         void Update(ModelType model);
 
