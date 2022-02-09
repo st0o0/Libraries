@@ -4,18 +4,11 @@ using System;
 
 namespace JSLibrary.BusinessLogic
 {
-    public abstract class BusinessLogic<DBContextType> : IBusinessLogic where DBContextType : DbContext, new()
+    public abstract class BusinessLogic<DBContextType> : IBusinessLogic where DBContextType : DbContext
     {
         public BusinessLogic(DBContextType dBContext = null)
         {
-            if (dBContext == null)
-            {
-                DataContext = new DBContextType();
-            }
-            else
-            {
-                DataContext = dBContext;
-            }
+            DataContext = dBContext;
         }
 
         public DBContextType DataContext { get; } = null;

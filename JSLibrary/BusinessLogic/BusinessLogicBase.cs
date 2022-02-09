@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.BusinessLogic
 {
-    public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext, new() where ModelType : class, new()
+    public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext where ModelType : class, new()
     {
         public BusinessLogicBase(DBContextType dBContext) : base(dBContext)
         {
