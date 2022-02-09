@@ -6,12 +6,12 @@ namespace JSLibrary.BusinessLogic
 {
     public abstract class BusinessLogic<DBContextType> : IBusinessLogic where DBContextType : DbContext
     {
-        public BusinessLogic(DBContextType dBContext = null)
+        public BusinessLogic(DBContextType dBContext)
         {
             DataContext = dBContext;
         }
 
-        public DBContextType DataContext { get; } = null;
+        public DBContextType DataContext { get; }
 
         public DateTime GetTime()
         {
