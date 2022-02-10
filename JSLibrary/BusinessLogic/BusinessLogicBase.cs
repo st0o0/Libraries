@@ -1,6 +1,7 @@
 ﻿using JSLibrary.BusinessLogic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,55 +15,58 @@ namespace JSLibrary.BusinessLogic
 
         public virtual void Add(ModelType model)
         {
-            DataContext.Add(model);
+            DataContext.Set<ModelType>().Add(model);
             SaveChanges();
         }
 
         public virtual async Task AddAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            await Task.Run(() => Add(model), cancellationToken);
+            DataContext.Set<ModelType>().Add(model);
+            await SaveChangesAsync(cancellationToken);
         }
 
         public virtual void Delete(ModelType model)
         {
-            DataContext.Remove(model);
+            DataContext.Set<ModelType>().Remove(model);
             SaveChanges();
         }
 
         public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            await Task.Run(() => Delete(model), cancellationToken);
+            DataContext.Set<ModelType>().Remove(model);
+            await SaveChangesAsync(cancellationToken);
         }
 
         public virtual ModelType Get(int Id)
         {
-            return DataContext.Find<ModelType>(Id);
+            return DataContext.Set<ModelType>().Find(Id);
         }
 
         public virtual async Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Get(id), cancellationToken);
+            return await DataContext.Set<ModelType>().FindAsync(id, cancellationToken);
         }
 
-        public virtual IEnumerable<ModelType> Load()
+        public virtual IQueryable<ModelType> Load()
         {
-            return DataContext.Set<ModelType>();
+            return DataContext.Set<ModelType>().AsNoTrackingWithIdentityResolution();
         }
 
-        public virtual async Task<IEnumerable<ModelType>> LoadAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<IQueryable<ModelType>> LoadAsync(CancellationToken cancellationToken = default)
         {
             return await Task.Run(() => { return Load(); }, cancellationToken);
         }
 
         public virtual void Update(ModelType model)
         {
-            DataContext.Update(model);
+            DataContext.Set<ModelType>().Update(model);
             SaveChanges();
         }
 
         public virtual async Task UpdateAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            await Task.Run(() => Update(model), cancellationToken);
+            DataContext.Set<ModelType>().Update(model);
+            await SaveChangesAsync(cancellationToken);
         }
     }
 }

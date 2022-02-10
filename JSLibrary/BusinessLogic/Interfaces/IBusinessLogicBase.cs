@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace JSLibrary.BusinessLogic.Interfaces
 {
-    public interface IBusinessLogicBase<ModelType, DBContextType> where ModelType : class, new() where DBContextType : DbContext
+    public interface IBusinessLogicBase<ModelType, DBContextType>: IBusinessLogic<DBContextType> where ModelType : class, new() where DBContextType : DbContext
     {
         void Add(ModelType model);
 
@@ -19,9 +20,9 @@ namespace JSLibrary.BusinessLogic.Interfaces
 
         Task<ModelType> GetAsync(int Id, CancellationToken cancellationToken = default);
 
-        IEnumerable<ModelType> Load();
+        IQueryable<ModelType> Load();
 
-        Task<IEnumerable<ModelType>> LoadAsync(CancellationToken cancellationToken = default);
+        Task<IQueryable<ModelType>> LoadAsync(CancellationToken cancellationToken = default);
 
         void Delete(ModelType model);
 
