@@ -11,6 +11,8 @@ namespace JSLibrary.BusinessLogic.Interfaces
 
         DateTime GetTime();
 
+        void ChangeTrackerClear();
+
         void SaveChanges();
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);

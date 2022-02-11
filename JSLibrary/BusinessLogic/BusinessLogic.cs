@@ -10,7 +10,7 @@ namespace JSLibrary.BusinessLogic
     {
         public BusinessLogic(DBContextType dBContext)
         {
-            DataContext = dBContext;
+            this.DataContext = dBContext;
         }
 
         public DBContextType DataContext { get; }
@@ -18,6 +18,11 @@ namespace JSLibrary.BusinessLogic
         public DateTime GetTime()
         {
             return DateTime.UtcNow;
+        }
+
+        public void ChangeTrackerClear()
+        {
+            this.DataContext.ChangeTracker.Clear();
         }
 
         public void SaveChanges()
