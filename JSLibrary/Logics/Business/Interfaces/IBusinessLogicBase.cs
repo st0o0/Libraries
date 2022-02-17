@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JSLibrary.BusinessLogic.Interfaces
+namespace JSLibrary.Logics.Business.Interfaces
 {
-    public interface IBusinessLogicBase<ModelType, DBContextType>: IBusinessLogic<DBContextType> where ModelType : class, new() where DBContextType : DbContext
+    public interface IBusinessLogicBase<ModelType, DBContextType> : IBusinessLogic<DBContextType> where ModelType : class, new() where DBContextType : DbContext
     {
         void Add(ModelType model);
 

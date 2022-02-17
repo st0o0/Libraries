@@ -1,11 +1,10 @@
-﻿using JSLibrary.BusinessLogic.Interfaces;
+﻿using JSLibrary.Logics.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JSLibrary.BusinessLogic
+namespace JSLibrary.Logics.Business
 {
     public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext where ModelType : class, new()
     {

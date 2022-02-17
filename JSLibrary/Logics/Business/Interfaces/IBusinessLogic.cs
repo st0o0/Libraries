@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JSLibrary.BusinessLogic.Interfaces
+namespace JSLibrary.Logics.Business.Interfaces
 {
     public interface IBusinessLogic<DBContextType> : IDisposable where DBContextType : DbContext
     {

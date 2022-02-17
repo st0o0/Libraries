@@ -1,10 +1,10 @@
-﻿using JSLibrary.BusinessLogic.Interfaces;
+﻿using JSLibrary.Logics.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JSLibrary.BusinessLogic
+namespace JSLibrary.Logics.Business
 {
     public abstract class BusinessLogic<DBContextType> : IBusinessLogic<DBContextType> where DBContextType : DbContext
     {
