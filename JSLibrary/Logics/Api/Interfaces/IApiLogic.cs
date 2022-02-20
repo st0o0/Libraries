@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace JSLibrary.Logics.Api.Interfaces
 {
-    public interface IApiLogic<HttpClientFactoryType> : IDisposable where HttpClientFactoryType : IHttpClientFactory
+    public interface IApiLogic : IDisposable
     {
         public HttpClient HttpClient { get; }
     }

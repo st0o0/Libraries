@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Api.Interfaces
 {
-    public interface IApiLogicBase<ModelType, HttpClientFactoryType> : IApiLogic<HttpClientFactoryType> where HttpClientFactoryType : IHttpClientFactory where ModelType : class, IAPIModel
+    public interface IApiLogicBase<ModelType> : IApiLogic where ModelType : class, IAPIModel
     {
         string ModelName { get; }
 

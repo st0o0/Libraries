@@ -4,13 +4,8 @@ using System.Net.Http;
 
 namespace JSLibrary.Logics.Api
 {
-    public class ApiLogic<HttpClientFactoryType> : IApiLogic<HttpClientFactoryType> where HttpClientFactoryType : IHttpClientFactory
+    public class ApiLogic : IApiLogic
     {
-        public ApiLogic(string httpClientName, HttpClientFactoryType hCContext)
-        {
-            HttpClient = hCContext.CreateClient(httpClientName);
-        }
-
         public ApiLogic(HttpClient httpClient)
         {
             this.HttpClient = httpClient;

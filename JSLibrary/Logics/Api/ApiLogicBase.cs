@@ -10,9 +10,13 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Api
 {
-    public class ApiLogicBase<ModelType, HttpClientFactoryType> : ApiLogic<HttpClientFactoryType>, IApiLogicBase<ModelType, HttpClientFactoryType> where ModelType : class, IAPIModel where HttpClientFactoryType : IHttpClientFactory
+    public class ApiLogicBase<ModelType> : ApiLogic, IApiLogicBase<ModelType> where ModelType : class, IAPIModel
     {
-        public ApiLogicBase(string modelName, string httpClientName, HttpClientFactoryType contextType) : base(httpClientName, contextType)
+        public ApiLogicBase(string modelName, string httpClientName, IHttpClientFactory httpClientFactory) : this(modelName, httpClientFactory.CreateClient(httpClientName))
+        {
+        }
+
+        public ApiLogicBase(string modelName, HttpClient httpClient) : base(httpClient)
         {
             if (!modelName.EndsWith("/")) { modelName += "/"; }
             this.RelativeApiPath = modelName.ToLower();
