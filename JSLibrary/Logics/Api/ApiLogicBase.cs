@@ -35,46 +35,48 @@ namespace JSLibrary.Logics.Api
 
         public virtual async Task<IEnumerable<ModelType>> GetAsync(CancellationToken cancellationToken = default)
         {
-            return await HttpClient.GetFromJsonAsync<IEnumerable<ModelType>>(this.RelativeApiPath, cancellationToken);
+            return await this.HttpClient.GetFromJsonAsync<IEnumerable<ModelType>>(this.RelativeApiPath, cancellationToken);
         }
 
         public virtual async Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default)
         {
             if (id == 0) { throw new ArgumentNullException(); }
-            return await HttpClient.GetFromJsonAsync<ModelType>(this.RelativeApiPath + $"{id}", cancellationToken);
+            return await this.HttpClient.GetFromJsonAsync<ModelType>(this.RelativeApiPath + $"{id}", cancellationToken);
         }
 
-        public virtual async Task PostAsync(ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task<ModelType> PostAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            (await HttpClient.PostAsJsonAsync(this.RelativeApiPath, model, cancellationToken)).EnsureSuccessStatusCode();
+            HttpResponseMessage response = await this.HttpClient.PostAsJsonAsync(this.RelativeApiPath, model, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken: cancellationToken);
         }
 
-        public virtual async Task PutAsync(int id, ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task<ModelType> PutAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            if (id == 0) { throw new ArgumentNullException("Id is null"); }
-            if (id != model.Id) { throw new ArgumentNullException("Id != Model.Id"); }
-            (await HttpClient.PutAsJsonAsync(this.RelativeApiPath + $"{id}", model, cancellationToken)).EnsureSuccessStatusCode();
+            if (model == null || model.Id == 0) { throw new ArgumentNullException("Model is null or Id is zero"); }
+            HttpResponseMessage response = await this.HttpClient.PutAsJsonAsync(this.RelativeApiPath + $"{model.Id}", model, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken: cancellationToken);
         }
 
-        public virtual async Task DeleteAsync(int id, ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            if (id == 0) { throw new ArgumentNullException("Id is null"); }
-            if (id != model.Id) { throw new ArgumentNullException("Id != Model.Id"); }
-            (await HttpClient.DeleteAsJsonAsync(this.RelativeApiPath + $"{id}", model, cancellationToken)).EnsureSuccessStatusCode();
+            if (model == null || model.Id == 0) { throw new ArgumentNullException("Model is null or Id is zero"); }
+            (await this.HttpClient.DeleteAsJsonAsync(this.RelativeApiPath + $"{model.Id}", model, cancellationToken)).EnsureSuccessStatusCode();
         }
 
         public virtual async Task<ModelType> UploadAsync(MultipartFormDataContent content, CancellationToken cancellationToken = default)
         {
             if (content == null) { throw new ArgumentNullException(nameof(content)); }
-            HttpResponseMessage responseMessage = await HttpClient.PostAsync($"{RelativeApiPath}{UploadPath}", content);
-            responseMessage.EnsureSuccessStatusCode();
-            return await responseMessage.Content.ReadFromJsonAsync<ModelType>();
+            HttpResponseMessage response = await this.HttpClient.PostAsync($"{RelativeApiPath}{UploadPath}", content);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<ModelType>();
         }
 
         public virtual async Task<Stream> DownloadAsync(int id, CancellationToken cancellationToken = default)
         {
             if (id == 0) { throw new ArgumentNullException("Id is null"); }
-            HttpResponseMessage httpResponse = await HttpClient.GetAsync($"{RelativeApiPath}{DownloadPath}{id}");
+            HttpResponseMessage httpResponse = await this.HttpClient.GetAsync($"{RelativeApiPath}{DownloadPath}{id}");
             httpResponse.EnsureSuccessStatusCode();
             return await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
         }

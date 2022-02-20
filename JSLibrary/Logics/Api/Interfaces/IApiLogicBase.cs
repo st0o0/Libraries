@@ -20,11 +20,11 @@ namespace JSLibrary.Logics.Api.Interfaces
 
         Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default);
 
-        Task PostAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task<ModelType> PostAsync(ModelType model, CancellationToken cancellationToken = default);
 
-        Task PutAsync(int id, ModelType model, CancellationToken cancellationToken = default);
+        Task<ModelType> PutAsync(ModelType model, CancellationToken cancellationToken = default);
 
-        Task DeleteAsync(int id, ModelType model, CancellationToken cancellationToken = default);
+        Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default);
 
         Task<ModelType> UploadAsync(MultipartFormDataContent content, CancellationToken cancellationToken = default);
 
