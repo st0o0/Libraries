@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Business.Interfaces
 {
-    public interface IBusinessLogicBase<ModelType, DBContextType> : IBusinessLogic<DBContextType> where ModelType : class, new() where DBContextType : DbContext
+    public interface IBusinessLogicBase<ModelType, DBContextType> : IBusinessLogic<DBContextType> where ModelType : class, IDBModel where DBContextType : DbContext
     {
         void Add(ModelType model);
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Business
 {
-    public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext where ModelType : class, new()
+    public class BusinessLogicBase<ModelType, DBContextType> : BusinessLogic<DBContextType>, IBusinessLogicBase<ModelType, DBContextType> where DBContextType : DbContext where ModelType : class, IDBModel
     {
         public BusinessLogicBase(DBContextType dBContext) : base(dBContext)
         {
@@ -48,7 +48,7 @@ namespace JSLibrary.Logics.Business
 
         public virtual IQueryable<ModelType> Load()
         {
-            return this.DataContext.Set<ModelType>().AsNoTrackingWithIdentityResolution();
+            return this.DataContext.Set<ModelType>();
         }
 
         public virtual async Task<IQueryable<ModelType>> LoadAsync(CancellationToken cancellationToken = default)
