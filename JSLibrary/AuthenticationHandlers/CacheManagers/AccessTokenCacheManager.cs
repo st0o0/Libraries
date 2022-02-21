@@ -7,11 +7,11 @@ namespace JSLibrary.AuthenticationHandlers.CacheManagers
 {
     public class AccessTokenCacheManager : IAccessTokenCacheManager
     {
-        private readonly ConcurrentDictionary<string, AccessTokenCacheEntry> cache = new ConcurrentDictionary<string, AccessTokenCacheEntry>();
+        private readonly ConcurrentDictionary<string, AccessTokenCacheEntry> cache = new();
 
         public void AddOrUpdateToken(string clientId, ITokenResponse accessToken)
         {
-            AccessTokenCacheEntry newToken = new AccessTokenCacheEntry(accessToken);
+            AccessTokenCacheEntry newToken = new(accessToken);
             this.cache.TryRemove(clientId, out _);
             this.cache.TryAdd(clientId, newToken);
         }
@@ -19,9 +19,7 @@ namespace JSLibrary.AuthenticationHandlers.CacheManagers
         public ITokenResponse GetToken(string clientId)
         {
             this.cache.TryGetValue(clientId, out AccessTokenCacheEntry tokenCacheEntry);
-            return tokenCacheEntry?.IsValid == true
-                ? tokenCacheEntry.Token
-                : null;
+            return tokenCacheEntry?.IsValid == true ? tokenCacheEntry.Token : null;
         }
 
         private class AccessTokenCacheEntry

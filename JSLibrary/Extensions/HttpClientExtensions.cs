@@ -23,11 +23,5 @@ namespace JSLibrary.Extensions
             => httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, requestUri) { Content = Serialize(data) }, cancellationToken);
 
         private static HttpContent Serialize(object data) => new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-
-        public static HttpClient SetJWTToken(this HttpClient httpClient, string token)
-        {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return httpClient;
-        }
     }
 }

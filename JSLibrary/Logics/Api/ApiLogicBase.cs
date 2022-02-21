@@ -70,15 +70,15 @@ namespace JSLibrary.Logics.Api
             if (content == null) { throw new ArgumentNullException(nameof(content)); }
             HttpResponseMessage response = await this.HttpClient.PostAsync($"{RelativeApiPath}{UploadPath}", content);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<ModelType>();
+            return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken: cancellationToken);
         }
 
         public virtual async Task<Stream> DownloadAsync(int id, CancellationToken cancellationToken = default)
         {
             if (id == 0) { throw new ArgumentNullException("Id is null"); }
-            HttpResponseMessage httpResponse = await this.HttpClient.GetAsync($"{RelativeApiPath}{DownloadPath}{id}");
-            httpResponse.EnsureSuccessStatusCode();
-            return await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
+            HttpResponseMessage response = await this.HttpClient.GetAsync($"{RelativeApiPath}{DownloadPath}{id}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync(cancellationToken);
         }
     }
 }

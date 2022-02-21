@@ -8,7 +8,7 @@ namespace JSLibrary.Logics.Business
 {
     public abstract class BusinessLogic<DBContextType> : IBusinessLogic<DBContextType> where DBContextType : DbContext
     {
-        public BusinessLogic(DBContextType dBContext)
+        protected BusinessLogic(DBContextType dBContext)
         {
             this.DataContext = dBContext;
         }
