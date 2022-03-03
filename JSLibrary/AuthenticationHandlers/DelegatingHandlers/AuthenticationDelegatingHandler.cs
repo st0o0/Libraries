@@ -20,6 +20,8 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
         private readonly IAccessTokenCacheManager accessTokensCacheManager;
         private readonly HttpClient accessControlHttpClient;
 
+        private readonly SemaphoreSlim semaphoreSlim = new(3, 3);
+
         public AuthenticationDelegatingHandler(IAccessTokenCacheManager accessTokensCacheManager, IClientCredentials clientCredentials, string basePath, string tokenEndpoint)
         {
             this.accessTokensCacheManager = accessTokensCacheManager;
@@ -71,31 +73,42 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            ITokenResponse token = await GetToken();
+            ITokenResponse token = await GetTokenAsync(cancellationToken);
 
             request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, token.AccessToken);
 
             return await base.SendAsync(request, cancellationToken);
         }
 
-        private async Task<ITokenResponse> GetToken()
+        private async Task<ITokenResponse> GetTokenAsync(CancellationToken cancellationToken = default)
         {
-            ITokenResponse token = accessTokensCacheManager.GetToken(clientCredentials.ClientId);
-            if (token == null)
+            await this.semaphoreSlim.WaitAsync(cancellationToken);
+            try
             {
-                token = await GetNewToken(clientCredentials);
-                accessTokensCacheManager.AddOrUpdateToken(clientCredentials.ClientId, token);
+                ITokenResponse token = accessTokensCacheManager.GetToken(clientCredentials.ClientId);
+                if (token == null)
+                {
+                    await this.semaphoreSlim.WaitAsync(cancellationToken);
+                    await this.semaphoreSlim.WaitAsync(cancellationToken);
+                    token = await GetNewTokenAsync(clientCredentials, cancellationToken);
+                    accessTokensCacheManager.AddOrUpdateToken(clientCredentials.ClientId, token);
+                    this.semaphoreSlim.Release(2);
+                }
+                return token;
             }
-            return token;
+            finally
+            {
+                this.semaphoreSlim.Release();
+            }
         }
 
-        private async Task<ITokenResponse> GetNewToken(IClientCredentials credentials)
+        private async Task<ITokenResponse> GetNewTokenAsync(IClientCredentials credentials, CancellationToken cancellationToken = default)
         {
-            HttpResponseMessage response = await accessControlHttpClient.PostAsJsonAsync(tokenEndpoint, credentials);
+            HttpResponseMessage response = await accessControlHttpClient.PostAsJsonAsync(tokenEndpoint, credentials, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                ITokenResponse tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
+                ITokenResponse tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken: cancellationToken);
                 return tokenResponse;
             }
 
