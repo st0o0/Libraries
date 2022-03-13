@@ -9,140 +9,344 @@ namespace JSLibrary.TPL
 {
     public static class ParallelTask
     {
-        public static async Task TaskManyAsync<InputType>(IEnumerable<InputType> inputs, Action<InputType> action, int degreeParallel = 5, CancellationToken cancellationToken = default)
+        private static int multiplicator = 2;
+
+        public static void SetMultiplicator(int value) => multiplicator = value;
+
+        public static int MaxDegreeOfParallelism => Convert.ToInt32(Math.Ceiling((Environment.ProcessorCount * 0.75) * multiplicator));
+
+        public static async Task TaskManyAsync<InputType>(IEnumerable<InputType> items, Action<InputType> action, CancellationToken cancellationToken = default)
         {
-            ActionBlock<InputType> actionBlock = new(action, new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken });
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
 
-            inputs.ToList().ForEach(x => actionBlock.SendAsync(x, cancellationToken));
+            ActionBlock<InputType> ab = new(action, edflbo);
 
-            actionBlock.Complete();
+            foreach (InputType input in items)
+            {
+                await ab.SendAsync(input, cancellationToken);
+            }
 
-            await actionBlock.Completion;
+            ab.Complete();
+
+            await ab.Completion;
         }
 
-        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> inputs, Func<InputType, OutputType> func, int degreeParallel = 5, CancellationToken cancellationToken = default)
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, OutputType> func, CancellationToken cancellationToken = default)
         {
             List<OutputType> outputs = new();
 
             ExecutionDataflowBlockOptions edflbo = new()
             {
-                MaxDegreeOfParallelism = degreeParallel,
-                CancellationToken = cancellationToken
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
             };
 
-            TransformBlock<InputType, OutputType> transformBlock = new(func, edflbo);
-
-            ActionBlock<OutputType> actionBlock = new(input =>
+            TransformBlock<InputType, OutputType> tb = new(func, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
             {
-                outputs.Add(input);
-            }, edflbo);
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
-            transformBlock.LinkTo(actionBlock, new() { PropagateCompletion = true, });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            inputs.ToList().ForEach(x => transformBlock.SendAsync(x, cancellationToken));
-
-            transformBlock.Complete();
-
-            await actionBlock.Completion;
-
-            if (inputs.Count() != outputs.Count)
+            foreach (InputType input in items)
             {
-                throw new Exception();
+                await tb.SendAsync(input, cancellationToken);
             }
+            tb.Complete();
+
+            await ab.Completion;
             return outputs;
         }
 
-        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> inputs, Func<InputType, Task<OutputType>> func, int degreeParallel = 5, CancellationToken cancellationToken = default)
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<OutputType>> func, CancellationToken cancellationToken = default)
         {
             List<OutputType> outputs = new();
 
-            ExecutionDataflowBlockOptions edflbo = new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken };
-
-            TransformBlock<InputType, OutputType> transformBlock = new(func, edflbo);
-
-            ActionBlock<OutputType> actionBlock = new(input =>
+            ExecutionDataflowBlockOptions edflbo = new()
             {
-                outputs.Add(input);
-            }, edflbo);
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
 
-            transformBlock.LinkTo(actionBlock, new() { PropagateCompletion = true });
-
-            inputs.ToList().ForEach(x => transformBlock.SendAsync(x, cancellationToken));
-
-            transformBlock.Complete();
-
-            await actionBlock.Completion;
-
-            if (inputs.Count() != outputs.Count)
+            TransformBlock<InputType, OutputType> tb = new(func, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
             {
-                throw new Exception();
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tb.SendAsync(input, cancellationToken);
             }
+            tb.Complete();
+
+            await ab.Completion;
             return outputs;
         }
 
-        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> inputs, Func<InputType, IEnumerable<MiddleType>> func, Func<MiddleType, OutputType> func1, int degreeParallel = 5, CancellationToken cancellationToken = default)
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<OutputType>> func, CancellationToken cancellationToken = default)
         {
             List<OutputType> outputs = new();
 
-            ExecutionDataflowBlockOptions edflbo = new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken };
-
-            TransformManyBlock<InputType, MiddleType> transformManyBlock = new(func, edflbo);
-
-            TransformBlock<MiddleType, OutputType> transformBlock = new(func1, edflbo);
-
-            ActionBlock<OutputType> actionBlock = new(input =>
+            ExecutionDataflowBlockOptions edflbo = new()
             {
-                outputs.Add(input);
-            }, edflbo);
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
 
-            transformManyBlock.LinkTo(transformBlock, new() { PropagateCompletion = true });
-
-            transformBlock.LinkTo(actionBlock, new() { PropagateCompletion = true });
-
-            inputs.ToList().ForEach(x => transformManyBlock.SendAsync(x, cancellationToken));
-
-            transformManyBlock.Complete();
-
-            await actionBlock.Completion;
-
-            if (inputs.Count() != outputs.Count)
+            TransformManyBlock<InputType, OutputType> tb = new(func, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
             {
-                throw new Exception();
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tb.SendAsync(input, cancellationToken);
             }
+            tb.Complete();
 
+            await ab.Completion;
             return outputs;
         }
 
-        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> inputs, Func<InputType, Task<IEnumerable<MiddleType>>> func, Func<MiddleType, OutputType> func1, int degreeParallel = 5, CancellationToken cancellationToken = default)
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<IEnumerable<OutputType>>> func, CancellationToken cancellationToken = default)
         {
             List<OutputType> outputs = new();
 
-            ExecutionDataflowBlockOptions edflbo = new() { MaxDegreeOfParallelism = degreeParallel, CancellationToken = cancellationToken };
-
-            TransformManyBlock<InputType, MiddleType> transformManyBlock = new(func, edflbo);
-
-            TransformBlock<MiddleType, OutputType> transformBlock = new(func1, edflbo);
-
-            ActionBlock<OutputType> actionBlock = new(input =>
+            ExecutionDataflowBlockOptions edflbo = new()
             {
-                outputs.Add(input);
-            }, edflbo);
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
 
-            transformManyBlock.LinkTo(transformBlock, new() { PropagateCompletion = true });
-
-            transformBlock.LinkTo(actionBlock, new() { PropagateCompletion = true });
-
-            inputs.ToList().ForEach(x => transformManyBlock.SendAsync(x, cancellationToken));
-
-            transformManyBlock.Complete();
-
-            await actionBlock.Completion;
-
-            if (inputs.Count() != outputs.Count)
+            TransformManyBlock<InputType, OutputType> tb = new(func, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
             {
-                throw new Exception();
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tb.SendAsync(input, cancellationToken);
             }
 
+            tb.Complete();
+
+            await ab.Completion;
+            return outputs;
+        }
+
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<MiddleType>> func0, Func<MiddleType, OutputType> func1, CancellationToken cancellationToken = default)
+        {
+            List<OutputType> outputs = new();
+
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            TransformManyBlock<InputType, MiddleType> tmb = new(func0, edflbo);
+            TransformBlock<MiddleType, OutputType> tb = new(func1, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
+            {
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tmb.SendAsync(input, cancellationToken);
+            }
+            tmb.Complete();
+
+            await ab.Completion;
+            return outputs;
+        }
+
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<IEnumerable<MiddleType>>> func0, Func<MiddleType, Task<OutputType>> func1, CancellationToken cancellationToken = default)
+        {
+            List<OutputType> outputs = new();
+
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            TransformManyBlock<InputType, MiddleType> tmb = new(func0, edflbo);
+            TransformBlock<MiddleType, OutputType> tb = new(func1, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
+            {
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tmb.SendAsync(input, cancellationToken);
+            }
+            tmb.Complete();
+
+            await ab.Completion;
+            return outputs;
+        }
+
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, MiddleType> func0, Func<MiddleType, IEnumerable<OutputType>> func1, CancellationToken cancellationToken = default)
+        {
+            List<OutputType> outputs = new();
+
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            TransformBlock<InputType, MiddleType> tmb = new(func0, edflbo);
+            TransformManyBlock<MiddleType, OutputType> tb = new(func1, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
+            {
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tmb.SendAsync(input, cancellationToken);
+            }
+            tmb.Complete();
+
+            await ab.Completion;
+            return outputs;
+        }
+
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<MiddleType>> func0, Func<MiddleType, Task<IEnumerable<OutputType>>> func1, CancellationToken cancellationToken = default)
+        {
+            List<OutputType> outputs = new();
+
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            TransformBlock<InputType, MiddleType> tmb = new(func0, edflbo);
+            TransformManyBlock<MiddleType, OutputType> tb = new(func1, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
+            {
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tmb.SendAsync(input, cancellationToken);
+            }
+            tmb.Complete();
+
+            await ab.Completion;
+            return outputs;
+        }
+
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<MiddleType>> func0, Func<MiddleType, IEnumerable<OutputType>> func1, CancellationToken cancellationToken = default)
+        {
+            List<OutputType> outputs = new();
+
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            TransformManyBlock<InputType, MiddleType> tmb = new(func0, edflbo);
+            TransformManyBlock<MiddleType, OutputType> tb = new(func1, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
+            {
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2, SingleProducerConstrained = true, EnsureOrdered = true });
+
+            tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tmb.SendAsync(input, cancellationToken);
+            }
+            tmb.Complete();
+
+            await ab.Completion;
+            return outputs;
+        }
+
+        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<IEnumerable<MiddleType>>> func0, Func<MiddleType, Task<IEnumerable<OutputType>>> func1, CancellationToken cancellationToken = default)
+        {
+            List<OutputType> outputs = new();
+
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            TransformManyBlock<InputType, MiddleType> tmb = new(func0, edflbo);
+            TransformManyBlock<MiddleType, OutputType> tb = new(func1, edflbo);
+            ActionBlock<OutputType> ab = new(x =>
+            {
+                outputs.Add(x);
+            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+
+            tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
+            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            foreach (InputType input in items)
+            {
+                await tmb.SendAsync(input, cancellationToken);
+            }
+            tmb.Complete();
+
+            await ab.Completion;
             return outputs;
         }
     }

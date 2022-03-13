@@ -6,6 +6,8 @@ namespace JSLibrary.AuthenticationHandlers.CacheManagers.Interfaces
     {
         void AddOrUpdateToken(string clientId, ITokenResponse accessToken);
 
+        void Clear();
+
         ITokenResponse GetToken(string clientId);
     }
 }

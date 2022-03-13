@@ -16,6 +16,11 @@ namespace JSLibrary.AuthenticationHandlers.CacheManagers
             this.cache.TryAdd(clientId, newToken);
         }
 
+        public void Clear()
+        {
+            this.cache.Clear();
+        }
+
         public ITokenResponse GetToken(string clientId)
         {
             this.cache.TryGetValue(clientId, out AccessTokenCacheEntry tokenCacheEntry);

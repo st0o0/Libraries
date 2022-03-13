@@ -1,5 +1,6 @@
 ﻿using JSLibrary.AuthenticationHandlers.CacheManagers.Interfaces;
 using JSLibrary.AuthenticationHandlers.Credentials.Interfaces;
+using JSLibrary.AuthenticationHandlers.Exceptions;
 using JSLibrary.AuthenticationHandlers.Responses;
 using JSLibrary.AuthenticationHandlers.Responses.Interfaces;
 using System;
@@ -20,7 +21,7 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
         private readonly IAccessTokenCacheManager accessTokensCacheManager;
         private readonly HttpClient accessControlHttpClient;
 
-        private readonly SemaphoreSlim semaphoreSlim = new(3, 3);
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
         public AuthenticationDelegatingHandler(IAccessTokenCacheManager accessTokensCacheManager, IClientCredentials clientCredentials, string basePath, string tokenEndpoint)
         {
@@ -88,11 +89,8 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
                 ITokenResponse token = accessTokensCacheManager.GetToken(clientCredentials.ClientId);
                 if (token == null)
                 {
-                    await this.semaphoreSlim.WaitAsync(cancellationToken);
-                    await this.semaphoreSlim.WaitAsync(cancellationToken);
                     token = await GetNewTokenAsync(clientCredentials, cancellationToken);
                     accessTokensCacheManager.AddOrUpdateToken(clientCredentials.ClientId, token);
-                    this.semaphoreSlim.Release(2);
                 }
                 return token;
             }
@@ -124,6 +122,10 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
             {
                 string errorResponse = await response.Content.ReadAsStringAsync();
                 errorMessage = $"{errorMessage} Error details: {errorResponse}";
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new LoginException($"{errorMessage} Status code: {(int)response.StatusCode} - {response.StatusCode}");
             }
             else
             {
