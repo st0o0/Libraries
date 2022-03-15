@@ -4,10 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WPFLibrary.ViewModels.Interfaces;
 
 namespace WPFLibrary.ViewModels
 {
-    public interface ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : ViewModel, IViewModel
     {
+        protected ViewModelBase(): base()
+        {
+        }
     }
 }

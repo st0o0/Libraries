@@ -1,12 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
+using WPFLibrary.ViewModels.Interfaces;
 
 namespace WPFLibrary.ViewModels
 {
-    internal class ViewModel
+    public abstract class ViewModel : IViewModel
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected ViewModel()
+        {
+            Dispatcher = Application.Current.Dispatcher;
+        }
+
+        public Dispatcher Dispatcher { get; private set; }
+
+        protected void UpdateUI(Action action, DispatcherPriority priority)
+        {
+            Dispatcher?.Invoke(action, priority);
+        }
+
+        protected async Task UpdateUIAsync(Action action, DispatcherPriority priority)
+        {
+            await Dispatcher?.InvokeAsync(action, priority);
+        }
+
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }
