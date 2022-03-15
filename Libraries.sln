@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSLibrary", "JSLibrary\JSLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputBoxLibrary", "InputBoxLibrary\InputBoxLibrary.csproj", "{FCF62B30-B302-4EC6-8139-01E4F4FEEFA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFLibrary", "WPFLibrary\WPFLibrary.csproj", "{FEF61033-F789-4CD6-BB3A-CAB4F7A18A11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FCF62B30-B302-4EC6-8139-01E4F4FEEFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCF62B30-B302-4EC6-8139-01E4F4FEEFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCF62B30-B302-4EC6-8139-01E4F4FEEFA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEF61033-F789-4CD6-BB3A-CAB4F7A18A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEF61033-F789-4CD6-BB3A-CAB4F7A18A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEF61033-F789-4CD6-BB3A-CAB4F7A18A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEF61033-F789-4CD6-BB3A-CAB4F7A18A11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
