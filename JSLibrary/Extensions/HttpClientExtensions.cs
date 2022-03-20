@@ -61,6 +61,6 @@ namespace JSLibrary.Extensions
 
         // utf8json Serialize
 
-        private static HttpContent Serialize(object data) => new StringContent(JsonSerializer.ToJsonString(data), Encoding.UTF8, "application/json");
+        private static HttpContent Serialize<TValue>(TValue data) => new StringContent(JsonSerializer.ToJsonString(data), Encoding.UTF8, "application/json");
     }
 }

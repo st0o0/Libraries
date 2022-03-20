@@ -19,12 +19,12 @@ namespace WPFLibrary.ViewModels
 
         public Dispatcher Dispatcher { get; private set; }
 
-        protected void UpdateUI(Action action, DispatcherPriority priority)
+        protected void UpdateUI(Action action, DispatcherPriority priority = DispatcherPriority.Input)
         {
             Dispatcher?.Invoke(action, priority);
         }
 
-        protected async Task UpdateUIAsync(Action action, DispatcherPriority priority)
+        protected async Task UpdateUIAsync(Action action, DispatcherPriority priority = DispatcherPriority.Input)
         {
             await Dispatcher?.InvokeAsync(action, priority);
         }
@@ -34,7 +34,7 @@ namespace WPFLibrary.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             GC.SuppressFinalize(this);
         }

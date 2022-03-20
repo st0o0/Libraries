@@ -36,14 +36,14 @@ namespace JSLibrary.Logics.Business
             await this.SaveChangesAsync(cancellationToken);
         }
 
-        public virtual ModelType Get(int Id)
+        public virtual ModelType Get(int id)
         {
-            return this.DataContext.Set<ModelType>().Find(Id);
+            return this.DataContext.Set<ModelType>().Find(id);
         }
 
         public virtual async Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await this.DataContext.Set<ModelType>().FindAsync(id, cancellationToken);
+            return await this.DataContext.Set<ModelType>().FindAsync(new object[] { id }, cancellationToken: cancellationToken);
         }
 
         public virtual IQueryable<ModelType> Load()
