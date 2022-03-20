@@ -12,7 +12,10 @@ namespace JSLibrary.Extensions
     {
         public static async Task AddManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
-            await ParallelTask.TaskManyAsync(items, async x => await businessLogic.AddAsync(x, cancellationToken), cancellationToken);
+            foreach (ModelType model in items)
+            {
+                await businessLogic.AddAsync(model, cancellationToken);
+            }
         }
 
         public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<int> ids, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
@@ -22,12 +25,18 @@ namespace JSLibrary.Extensions
 
         public static async Task UpdateManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
-            await ParallelTask.TaskManyAsync(items, async x => await businessLogic.UpdateAsync(x, cancellationToken), cancellationToken);
+            foreach (ModelType model in items)
+            {
+                await businessLogic.UpdateAsync(model, cancellationToken);
+            }
         }
 
         public static async Task DeleteManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
-            await ParallelTask.TaskManyAsync(items, async x => await businessLogic.DeleteAsync(x, cancellationToken), cancellationToken);
+            foreach (ModelType model in items)
+            {
+                await businessLogic.DeleteAsync(model, cancellationToken);
+            }
         }
     }
 }
