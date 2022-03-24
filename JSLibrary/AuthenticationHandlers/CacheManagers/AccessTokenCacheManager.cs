@@ -29,15 +29,17 @@ namespace JSLibrary.AuthenticationHandlers.CacheManagers
 
         private class AccessTokenCacheEntry
         {
+            private readonly DateTime refreshAfterDate;
+
             public AccessTokenCacheEntry(ITokenResponse token)
             {
                 this.Token = token;
-                this.RefreshAfterDate = DateTime.UtcNow + TimeSpan.FromSeconds(token.ExpirationInSeconds / 2.0);
+                this.refreshAfterDate = DateTime.UtcNow + TimeSpan.FromSeconds(token.ExpirationInSeconds / 2.0);
             }
 
             public ITokenResponse Token { get; }
-            private DateTime RefreshAfterDate { get; }
-            public bool IsValid => DateTime.UtcNow < RefreshAfterDate;
+
+            public bool IsValid => DateTime.UtcNow < refreshAfterDate;
         }
     }
 }

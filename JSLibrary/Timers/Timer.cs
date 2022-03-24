@@ -8,12 +8,13 @@ namespace JSLibrary.Timers
     {
         private readonly Timer timer;
 
-        public Timer(DateTime specificTime, TimerCallback<InputType> callback, InputType input, CancellationToken cancellationToken = default) : this(specificTime, async (x, ct) => await Task.Run(() => callback(x), ct), input, cancellationToken)
+        public Timer(DateTime specificTime, TimerCallback<InputType> callback, InputType input) : this(specificTime.ToUniversalTime().Subtract(DateTime.UtcNow) > TimeSpan.Zero ? specificTime.ToUniversalTime().Subtract(DateTime.UtcNow) : specificTime.AddDays(1).ToUniversalTime().Subtract(DateTime.UtcNow), TimeSpan.FromDays(1), callback, input)
         {
         }
 
-        public Timer(TimeSpan period, TimeSpan dueTime, TimerCallback<InputType> callback, InputType input, CancellationToken cancellationToken = default) : this(period, dueTime, async (x, ct) => await Task.Run(() => callback(x), ct), input, cancellationToken)
+        public Timer(TimeSpan period, TimeSpan dueTime, TimerCallback<InputType> callback, InputType input)
         {
+            this.timer = new Timer(x => callback(x as InputType), input, dueTime, period);
         }
 
         public Timer(DateTime specificTime, TimerCallbackAsync<InputType> callback, InputType input, CancellationToken cancellationToken = default) : this(specificTime.ToUniversalTime().Subtract(DateTime.UtcNow) > TimeSpan.Zero ? specificTime.ToUniversalTime().Subtract(DateTime.UtcNow) : specificTime.AddDays(1).ToUniversalTime().Subtract(DateTime.UtcNow), TimeSpan.FromDays(1), callback, input, cancellationToken)
