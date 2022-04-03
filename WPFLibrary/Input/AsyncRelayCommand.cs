@@ -1,16 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.ComponentModel;
 
 namespace WPFLibrary.Input
 {
-    public class AsyncRelayCommand : ObservableObject, IAsyncRelayCommand
+    /// <summary>
+    /// A command that mirrors the functionality of <see cref="RelayCommand"/>, with the addition of
+    /// accepting a <see cref="Func{TResult}"/> returning a <see cref="Task"/> as the execute
+    /// action, and providing an <see cref="ExecutionTask"/> property that notifies changes when
+    /// <see cref="ExecuteAsync"/> is invoked and when the returned <see cref="Task"/> completes.
+    /// </summary>
+    public sealed class AsyncRelayCommand : ObservableObject, IAsyncRelayCommand
     {
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="CanBeCanceled"/>.
