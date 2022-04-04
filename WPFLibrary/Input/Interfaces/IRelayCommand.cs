@@ -11,6 +11,6 @@ namespace WPFLibrary.Input
         /// <summary>
         /// Notifies that the <see cref="ICommand.CanExecute"/> property has changed.
         /// </summary>
-        void NotifyCanExecuteChanged();
+        void RaiseCanExecuteChanged();
     }
 }

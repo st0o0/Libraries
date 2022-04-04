@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace WPFLibrary.Input
 {
@@ -8,12 +7,6 @@ namespace WPFLibrary.Input
     /// </summary>
     public interface IAsyncRelayCommand : IRelayCommand, INotifyPropertyChanged
     {
-        /// <summary>
-        /// Gets the last scheduled <see cref="Task"/>, if available.
-        /// This property notifies a change when the <see cref="Task"/> completes.
-        /// </summary>
-        Task? ExecutionTask { get; }
-
         /// <summary>
         /// Gets a value indicating whether running operations for this command can be canceled.
         /// </summary>
@@ -28,14 +21,6 @@ namespace WPFLibrary.Input
         /// Gets a value indicating whether the command currently has a pending operation being executed.
         /// </summary>
         bool IsRunning { get; }
-
-        /// <summary>
-        /// Provides a more specific version of <see cref="System.Windows.Input.ICommand.Execute"/>,
-        /// also returning the <see cref="Task"/> representing the async operation being executed.
-        /// </summary>
-        /// <param name="parameter">The input parameter.</param>
-        /// <returns>The <see cref="Task"/> representing the async operation being executed.</returns>
-        Task ExecuteAsync(object? parameter);
 
         /// <summary>
         /// Communicates a request for cancelation.
