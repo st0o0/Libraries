@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WPFLibrary.Input
 {
@@ -9,5 +11,11 @@ namespace WPFLibrary.Input
     /// <remarks>This interface is needed to solve the diamond problem with base classes.</remarks>
     public interface IAsyncRelayCommand<in T> : IAsyncRelayCommand, IRelayCommand<T>
     {
+        /// <summary>
+        /// Provides a strongly-typed variant of <see cref="IAsyncRelayCommand.ExecuteAsync"/>.
+        /// </summary>
+        /// <param name="parameter">The input parameter.</param>
+        /// <returns>The <see cref="Task"/> representing the async operation being executed.</returns>
+        Task ExecuteAsync(T parameter);
     }
 }

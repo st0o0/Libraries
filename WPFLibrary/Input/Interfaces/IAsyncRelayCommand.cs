@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace WPFLibrary.Input
 {
@@ -23,9 +24,12 @@ namespace WPFLibrary.Input
         bool IsRunning { get; }
 
         /// <summary>
-        /// Notifies that the <see cref="ICommand.CanExecute"/> property has changed.
+        /// Provides a more specific version of <see cref="System.Windows.Input.ICommand.Execute"/>,
+        /// also returning the <see cref="Task"/> representing the async operation being executed.
         /// </summary>
-        void RaiseCanExecuteChanged();
+        /// <param name="parameter">The input parameter.</param>
+        /// <returns>The <see cref="Task"/> representing the async operation being executed.</returns>
+        Task ExecuteAsync(object? parameter);
 
         /// <summary>
         /// Communicates a request for cancelation.
