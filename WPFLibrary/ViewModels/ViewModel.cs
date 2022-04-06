@@ -1,17 +1,14 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using WPFLibrary.ComponentModel;
 using WPFLibrary.ViewModels.Interfaces;
 
 namespace WPFLibrary.ViewModels
 {
-    public abstract class ViewModel : IViewModel
+    public abstract class ViewModel : ObservableObject, IViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         protected ViewModel()
         {
             Dispatcher = Application.Current.Dispatcher;
@@ -27,11 +24,6 @@ namespace WPFLibrary.ViewModels
         protected async Task UpdateUIAsync(Action action, DispatcherPriority priority = DispatcherPriority.Input)
         {
             await Dispatcher?.InvokeAsync(action, priority);
-        }
-
-        protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public virtual void Dispose()
