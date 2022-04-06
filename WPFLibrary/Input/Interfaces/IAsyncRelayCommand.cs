@@ -23,6 +23,11 @@ namespace WPFLibrary.Input
         bool IsRunning { get; }
 
         /// <summary>
+        /// Notifies that the <see cref="ICommand.CanExecute"/> property has changed.
+        /// </summary>
+        void RaiseCanExecuteChanged();
+
+        /// <summary>
         /// Communicates a request for cancelation.
         /// </summary>
         /// <remarks>
