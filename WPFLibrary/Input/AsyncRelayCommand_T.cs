@@ -8,6 +8,10 @@ using WPFLibrary.ComponentModel;
 
 namespace WPFLibrary.Input
 {
+    /// <summary>
+    /// A generic command that provides a more specific version of <see cref="AsyncRelayCommand"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of parameter being passed as input to the callbacks.</typeparam>
     public sealed class AsyncRelayCommand<T> : ObservableObject, IAsyncRelayCommand<T>
     {
         /// <summary>

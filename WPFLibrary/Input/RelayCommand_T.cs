@@ -4,6 +4,13 @@ using System.Runtime.CompilerServices;
 
 namespace WPFLibrary.Input
 {
+    /// <summary>
+    /// A generic command whose sole purpose is to relay its functionality to other
+    /// objects by invoking delegates. The default return value for the CanExecute
+    /// method is <see langword="true"/>. This class allows you to accept command parameters
+    /// in the <see cref="Execute(T)"/> and <see cref="CanExecute(T)"/> callback methods.
+    /// </summary>
+    /// <typeparam name="T">The type of parameter being passed as input to the callbacks.</typeparam>
     public sealed class RelayCommand<T> : IRelayCommand<T>
     {
         /// <summary>
