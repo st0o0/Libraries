@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using WPFLibrary.ComponentModel;
 
 namespace WPFLibrary.Input
@@ -17,17 +17,17 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="CanBeCanceled"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new(nameof(CanBeCanceled));
+        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new PropertyChangedEventArgs(nameof(CanBeCanceled));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsCancellationRequested"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new(nameof(IsCancellationRequested));
+        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new PropertyChangedEventArgs(nameof(IsCancellationRequested));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsRunning"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new(nameof(IsRunning));
+        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new PropertyChangedEventArgs(nameof(IsRunning));
 
         /// <summary>
         /// The <see cref="Func{TResult}"/> to invoke when <see cref="Execute(T)"/> is used.
@@ -44,24 +44,31 @@ namespace WPFLibrary.Input
         /// </summary>
         private readonly Expression<Func<T, bool>> canExecute;
 
-        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+
+        private readonly CastTypes castTypes;
 
         private CancellationTokenSource cancellationTokenSource;
 
         private Task ExecuteTask;
 
         /// <inheritdoc/>
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested += value;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class that can always execute.
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T?, Task> execute)
+        public AsyncRelayCommand(Func<T, Task> execute, CastTypes castTypes = CastTypes.SoftCast)
         {
             this.execute = execute;
             this.canExecute = param => true;
+            this.castTypes = castTypes;
         }
 
         /// <summary>
@@ -69,11 +76,12 @@ namespace WPFLibrary.Input
         /// </summary>
         /// <param name="cancelableExecute">The cancelable execution logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T?, CancellationToken, Task> cancelableExecute)
+        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, CastTypes castTypes = CastTypes.SoftCast)
         {
-            this.cancellationTokenSource = new();
+            this.cancellationTokenSource = new CancellationTokenSource();
             this.cancelableExecute = cancelableExecute;
             this.canExecute = param => true;
+            this.castTypes = castTypes;
         }
 
         /// <summary>
@@ -82,10 +90,11 @@ namespace WPFLibrary.Input
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T?, Task> execute, Expression<Func<T, bool>> canExecute)
+        public AsyncRelayCommand(Func<T, Task> execute, Expression<Func<T, bool>> canExecute, CastTypes castTypes = CastTypes.SoftCast)
         {
             this.execute = execute;
             this.canExecute = canExecute;
+            this.castTypes = castTypes;
         }
 
         /// <summary>
@@ -94,15 +103,16 @@ namespace WPFLibrary.Input
         /// <param name="cancelableExecute">The cancelable execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, Expression<Func<T, bool>> canExecute)
+        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, Expression<Func<T, bool>> canExecute, CastTypes castTypes = CastTypes.SoftCast)
         {
-            this.cancellationTokenSource = new();
+            this.cancellationTokenSource = new CancellationTokenSource();
             this.cancelableExecute = cancelableExecute;
             this.canExecute = canExecute;
+            this.castTypes = castTypes;
         }
 
         /// <inheritdoc/>
-        public bool CanBeCanceled => this.cancelableExecute is not null && IsRunning;
+        public bool CanBeCanceled => (!(this.cancelableExecute is null)) && IsRunning;
 
         /// <inheritdoc/>
         public bool IsCancellationRequested => this.cancellationTokenSource?.IsCancellationRequested == true;
@@ -113,42 +123,73 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public void NotifyCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            CommandManager.InvalidateRequerySuggested();
         }
 
         /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanExecute(T parameter)
         {
-            return this.canExecute?.Compile().Invoke(parameter) != false;
+            return this.canExecute.Compile().Invoke(parameter) != false;
         }
 
         /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CanExecute(object? parameter)
+        public bool CanExecute(object parameter)
         {
-            if (parameter is not T value)
+            if (this.semaphoreSlim.CurrentCount == 0)
             {
                 return false;
             }
-            return CanExecute(value);
+            if (castTypes is CastTypes.SoftCast)
+            {
+                if (parameter is T value)
+                {
+                    return CanExecute(value);
+                }
+            }
+            else if (castTypes is CastTypes.HardCast)
+            {
+                if (parameter is null)
+                {
+                    if (!typeof(T).IsNullable())
+                    {
+                        return CanExecute(default(T));
+                    }
+                }
+                return CanExecute((T)parameter);
+            }
+            return false;
         }
 
         /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Execute(object parameter)
+        {
+            if (castTypes is CastTypes.SoftCast)
+            {
+                if (parameter is T value)
+                {
+                    Execute(value);
+                }
+                return;
+            }
+            else if (castTypes is CastTypes.HardCast)
+            {
+                if (parameter is null)
+                {
+                    if (!typeof(T).IsNullable())
+                    {
+                        Execute(default(T));
+                        return;
+                    }
+                }
+                Execute((T)parameter);
+            }
+            return;
+        }
+
+        /// <inheritdoc/>
         public void Execute(T parameter)
         {
             _ = ExecuteAsync(parameter);
-        }
-
-        /// <inheritdoc/>
-        public void Execute(object? parameter)
-        {
-            if (parameter is not T value)
-            {
-                return;
-            }
-            Execute(value);
         }
 
         /// <inheritdoc/>
@@ -157,27 +198,32 @@ namespace WPFLibrary.Input
             try
             {
                 await this.semaphoreSlim.WaitAsync();
-                if (this.execute is not null)
+                NotifyCanExecuteChanged();
+
+                if (!(this.execute is null) && this.cancelableExecute is null)
                 {
                     this.ExecuteTask = this.execute(parameter);
+                    OnPropertyChanged(IsRunningChangedEventArgs);
                     await this.ExecuteTask;
                 }
-                else if (this.cancelableExecute is not null)
+                else
                 {
                     this.ExecuteTask = this.cancelableExecute.Invoke(parameter, this.cancellationTokenSource.Token);
+                    OnPropertyChanged(IsRunningChangedEventArgs);
                     await this.ExecuteTask;
                 }
             }
             finally
             {
                 this.semaphoreSlim.Release();
-                this.cancellationTokenSource = new();
+                NotifyCanExecuteChanged();
+                this.cancellationTokenSource = new CancellationTokenSource();
                 OnPropertyChanged(IsCancellationRequestedChangedEventArgs);
             }
         }
 
         /// <inheritdoc/>
-        public Task ExecuteAsync(object? parameter)
+        public Task ExecuteAsync(object parameter)
         {
             throw new NotImplementedException();
         }
@@ -185,8 +231,7 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public void Cancel()
         {
-            this.cancellationTokenSource?.Cancel();
-
+            this.cancellationTokenSource.Cancel();
             OnPropertyChanged(IsCancellationRequestedChangedEventArgs);
             OnPropertyChanged(CanBeCanceledChangedEventArgs);
         }

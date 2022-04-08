@@ -54,15 +54,6 @@ namespace WPFLibrary.ComponentModel
         }
 
         /// <summary>
-        /// Raises the <see cref="PropertyChanging"/> event.
-        /// </summary>
-        /// <param name="propertyName">(optional) The name of the property that changed.</param>
-        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
         /// Compares the current and new values for a given property. If the value has changed,
         /// raises the <see cref="PropertyChanging"/> event, updates the property with the new
         /// value, then raises the <see cref="PropertyChanged"/> event.

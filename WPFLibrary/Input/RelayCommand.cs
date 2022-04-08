@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace WPFLibrary.Input
 {
@@ -28,8 +29,8 @@ namespace WPFLibrary.Input
         /// <param name="execute">The execution logic.</param>
         public RelayCommand(Action execute)
         {
-            this.canExecute = () => true;
             this.execute = execute;
+            this.canExecute = () => true;
         }
 
         /// <summary>
@@ -39,30 +40,33 @@ namespace WPFLibrary.Input
         /// <param name="canExecute">The execution status logic.</param>
         public RelayCommand(Action execute, Expression<Func<bool>> canExecute)
         {
-            this.canExecute = canExecute;
             this.execute = execute;
+            this.canExecute = canExecute;
         }
 
         /// <inheritdoc/>
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested += value;
+        }
 
         /// <inheritdoc/>
         public void NotifyCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            CommandManager.InvalidateRequerySuggested();
         }
 
         /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CanExecute(object? parameter)
+        public bool CanExecute(object parameter)
         {
-            return this.canExecute?.Compile()?.Invoke() != false;
+            return this.canExecute.Compile().Invoke() != false;
         }
 
         /// <inheritdoc/>
-        public void Execute(object? parameter)
+        public void Execute(object parameter)
         {
-            execute?.Invoke();
+            execute.Invoke();
         }
     }
 }

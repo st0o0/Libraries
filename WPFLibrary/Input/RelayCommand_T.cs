@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace WPFLibrary.Input
 {
@@ -23,6 +23,8 @@ namespace WPFLibrary.Input
         /// </summary>
         private readonly Action<T> execute;
 
+        private readonly CastTypes castTypes;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RelayCommand{T}"/> class that can always execute.
         /// </summary>
@@ -32,10 +34,11 @@ namespace WPFLibrary.Input
         /// nullable <see cref="object"/> parameter, it is recommended that if <typeparamref name="T"/> is a reference type,
         /// you should always declare it as nullable, and to always perform checks within <paramref name="execute"/>.
         /// </remarks>
-        public RelayCommand(Action<T> action)
+        public RelayCommand(Action<T> action, CastTypes castTypes = CastTypes.Auto)
         {
-            this.canExecute = s => true;
             this.execute = action;
+            this.canExecute = param => true;
+            this.castTypes = castTypes == CastTypes.Auto ? typeof(T).IsPrimitive ? CastTypes.HardCast : CastTypes.SoftCast : castTypes;
         }
 
         /// <summary>
@@ -44,53 +47,86 @@ namespace WPFLibrary.Input
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public RelayCommand(Action<T> action, Expression<Func<T, bool>> expression)
+        public RelayCommand(Action<T> action, Expression<Func<T, bool>> expression, CastTypes castTypes = CastTypes.Auto)
         {
             this.execute = action;
             this.canExecute = expression;
+            this.castTypes = castTypes == CastTypes.Auto ? typeof(T).IsPrimitive ? CastTypes.HardCast : CastTypes.SoftCast : castTypes;
         }
 
         /// <inheritdoc/>
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested += value;
+        }
 
         /// <inheritdoc/>
         public void NotifyCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            CommandManager.InvalidateRequerySuggested();
         }
 
         /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanExecute(T parameter)
         {
-            return canExecute?.Compile().Invoke(parameter) != false;
+            return canExecute.Compile().Invoke(parameter);
         }
 
         /// <inheritdoc/>
-        public bool CanExecute(object? parameter)
+        public bool CanExecute(object parameter)
         {
-            if (parameter is not T value)
+            if (castTypes is CastTypes.SoftCast)
             {
-                return false;
+                if (parameter is T value)
+                {
+                    return CanExecute(value);
+                }
             }
-            return CanExecute(value);
+            else if (castTypes is CastTypes.HardCast)
+            {
+                if (parameter is null)
+                {
+                    if (!typeof(T).IsNullable())
+                    {
+                        return CanExecute(default(T));
+                    }
+                }
+                return CanExecute((T)parameter);
+            }
+            return false;
         }
 
         /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Execute(T parameter)
         {
-            execute?.Invoke(parameter);
+            execute.Invoke(parameter);
         }
 
         /// <inheritdoc/>
-        public void Execute(object? parameter)
+        public void Execute(object parameter)
         {
-            if (parameter is not T value)
+            if (castTypes is CastTypes.SoftCast)
             {
+                if (parameter is T value)
+                {
+                    Execute(value);
+                }
                 return;
             }
-            Execute(value);
+            else if (castTypes is CastTypes.HardCast)
+            {
+                if (parameter is null)
+                {
+                    if (!typeof(T).IsNullable())
+                    {
+                        Execute(default(T));
+                        return;
+                    }
+                }
+                Execute((T)parameter);
+            }
+            return;
         }
     }
 }

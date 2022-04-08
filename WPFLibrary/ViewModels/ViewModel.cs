@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -24,6 +26,15 @@ namespace WPFLibrary.ViewModels
         protected async Task UpdateUIAsync(Action action, DispatcherPriority priority = DispatcherPriority.Input)
         {
             await Dispatcher?.InvokeAsync(action, priority);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanging"/> event.
+        /// </summary>
+        /// <param name="propertyName">(optional) The name of the property that changed.</param>
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         public virtual void Dispose()
