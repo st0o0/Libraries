@@ -2,6 +2,7 @@
 {
     public enum CastTypes
     {
+        Auto,
         HardCast,
         SoftCast
     }
