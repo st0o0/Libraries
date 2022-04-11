@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WPFLibrary.ComponentModel;
+using WPFLibrary.Extensions;
 
 namespace WPFLibrary.Input
 {
@@ -112,7 +113,7 @@ namespace WPFLibrary.Input
         }
 
         /// <inheritdoc/>
-        public bool CanBeCanceled => (!(this.cancelableExecute is null)) && IsRunning;
+        public bool CanBeCanceled => (this.cancelableExecute is not null) && IsRunning;
 
         /// <inheritdoc/>
         public bool IsCancellationRequested => this.cancellationTokenSource?.IsCancellationRequested == true;
@@ -200,7 +201,7 @@ namespace WPFLibrary.Input
                 await this.semaphoreSlim.WaitAsync();
                 NotifyCanExecuteChanged();
 
-                if (!(this.execute is null) && this.cancelableExecute is null)
+                if (this.execute is not null && this.cancelableExecute is null)
                 {
                     this.ExecuteTask = this.execute(parameter);
                     OnPropertyChanged(IsRunningChangedEventArgs);

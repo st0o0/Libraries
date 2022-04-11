@@ -145,13 +145,13 @@ namespace WPFLibrary.Input
             try
             {
                 await semaphoreSlim.WaitAsync();
-                if (!(this.execute is null))
+                if (this.execute is not null)
                 {
                     this.ExecuteTask = this.execute();
                     OnPropertyChanged(IsRunningChangedEventArgs);
                     await this.ExecuteTask;
                 }
-                else if (!(this.cancelableExecute is null))
+                else if (this.cancelableExecute is not null)
                 {
                     this.ExecuteTask = this.cancelableExecute.Invoke(this.cancellationTokenSource.Token);
                     OnPropertyChanged(IsRunningChangedEventArgs);
