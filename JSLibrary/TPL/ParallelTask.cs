@@ -13,7 +13,7 @@ namespace JSLibrary.TPL
 
         public static void SetMultiplicator(int value) => multiplicator = value;
 
-        public static int MaxDegreeOfParallelism => Convert.ToInt32(Math.Ceiling((Environment.ProcessorCount * 0.75) * multiplicator));
+        public static int MaxDegreeOfParallelism => Convert.ToInt32(Math.Floor((Environment.ProcessorCount * 0.75) * multiplicator));
 
         public static async Task TaskManyAsync<InputType>(IEnumerable<InputType> items, Action<InputType> action, CancellationToken cancellationToken = default)
         {

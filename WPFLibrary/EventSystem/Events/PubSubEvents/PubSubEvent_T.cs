@@ -156,15 +156,9 @@ namespace WPFLibrary.EventSystem.Events
         public virtual SubscriptionToken Subscribe(Action<TPayLoad> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive, Predicate<TPayLoad> filter)
         {
             IDelegateReference actionReference = new DelegateReference(action, keepSubscriberReferenceAlive);
-            IDelegateReference filterReference;
-            if (filter != null)
-            {
-                filterReference = new DelegateReference(filter, keepSubscriberReferenceAlive);
-            }
-            else
-            {
-                filterReference = new DelegateReference(new Predicate<TPayLoad>(x => true), true);
-            }
+            IDelegateReference filterReference = filter != null
+                ? new DelegateReference(filter, keepSubscriberReferenceAlive)
+                : (IDelegateReference)new DelegateReference(new Predicate<TPayLoad>(x => true), true);
 
             if (SynchronizationContext == null && threadOption == ThreadOption.UIThread)
             {

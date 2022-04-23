@@ -132,6 +132,7 @@ namespace WPFLibrary.EventSystem.Events
                 ThreadOption.UIThread => new DispatcherEventSubscription(actionReference, SynchronizationContext),
                 _ => new PublisherEventSubscription(actionReference),
             };
+
             return InternalSubscribe(subscription);
         }
 
@@ -164,6 +165,7 @@ namespace WPFLibrary.EventSystem.Events
                 ThreadOption.UIThread => new AsyncDispatcherEventSubscription(actionReference, SynchronizationContext),
                 _ => new AsyncPublisherEventSubscription(actionReference),
             };
+
             return InternalSubscribe(subscription);
         }
 
