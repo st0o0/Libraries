@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -18,14 +19,19 @@ namespace WPFLibrary.ViewModels
 
         public Dispatcher Dispatcher { get; private set; }
 
-        protected void UpdateUI(Action action, DispatcherPriority priority = DispatcherPriority.Input)
+        protected void UpdateUI(Action action, DispatcherPriority priority = DispatcherPriority.Input, CancellationToken cancellationToken = default)
         {
-            Dispatcher?.Invoke(action, priority);
+            Dispatcher?.Invoke(action, priority, cancellationToken);
         }
 
-        protected async Task UpdateUIAsync(Action action, DispatcherPriority priority = DispatcherPriority.Input)
+        protected async Task UpdateUIAsync(Action action, DispatcherPriority priority = DispatcherPriority.Input, CancellationToken cancellationToken = default)
         {
-            await Dispatcher?.InvokeAsync(action, priority);
+            await Dispatcher?.InvokeAsync(action, priority, cancellationToken);
+        }
+
+        protected async Task UpdateUIAsync(Func<Task> func, DispatcherPriority priority = DispatcherPriority.Input, CancellationToken cancellationToken = default)
+        {
+            await await Dispatcher.InvokeAsync<Task>(func, priority, cancellationToken);
         }
 
         /// <summary>
