@@ -19,17 +19,17 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="CanBeCanceled"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new PropertyChangedEventArgs(nameof(CanBeCanceled));
+        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new(nameof(CanBeCanceled));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsCancellationRequested"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new PropertyChangedEventArgs(nameof(IsCancellationRequested));
+        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new(nameof(IsCancellationRequested));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsRunning"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new PropertyChangedEventArgs(nameof(IsRunning));
+        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new(nameof(IsRunning));
 
         /// <summary>
         /// The <see cref="Func{TResult}"/> to invoke when <see cref="Execute"/> is used.
@@ -47,7 +47,7 @@ namespace WPFLibrary.Input
         /// </summary>
         private readonly Expression<Func<bool>> canExecute;
 
-        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
         private CancellationTokenSource cancellationTokenSource;
 
@@ -105,7 +105,7 @@ namespace WPFLibrary.Input
         }
 
         /// <inheritdoc/>
-        public bool CanBeCanceled => (!(this.cancelableExecute is null)) && IsRunning;
+        public bool CanBeCanceled => (this.cancelableExecute is not null) && IsRunning;
 
         /// <inheritdoc/>
         public bool IsCancellationRequested => this.cancellationTokenSource?.IsCancellationRequested == true;

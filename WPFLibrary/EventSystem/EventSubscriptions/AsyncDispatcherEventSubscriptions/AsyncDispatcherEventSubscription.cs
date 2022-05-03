@@ -31,7 +31,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="action">The action to execute.</param>
         public override Task InvokeAction(Func<Task> action)
         {
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            TaskCompletionSource<bool> tcs = new();
             syncContext.Post(async (args) =>
             {
                 await action();

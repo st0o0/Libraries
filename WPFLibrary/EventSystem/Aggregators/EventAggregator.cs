@@ -10,7 +10,7 @@ namespace WPFLibrary.EventSystem.Aggregators
     /// </summary>
     public sealed class EventAggregator : IEventAggregator
     {
-        private readonly Dictionary<Type, EventBase> events = new Dictionary<Type, EventBase>();
+        private readonly Dictionary<Type, EventBase> events = new();
 
         private readonly SynchronizationContext syncContext = SynchronizationContext.Current;
 

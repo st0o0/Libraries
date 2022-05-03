@@ -110,17 +110,17 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
                 return tokenResponse;
             }
 
-            string errorMessage = await GetErrorMessageAsync(response);
+            string errorMessage = await GetErrorMessageAsync(response, cancellationToken);
             throw new Exception(errorMessage);
         }
 
-        private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
+        private static async Task<string> GetErrorMessageAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
             string errorMessage = $"Error occured while trying to get access token from identity authority {response.RequestMessage.RequestUri}.";
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                string errorResponse = await response.Content.ReadAsStringAsync();
+                string errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
                 errorMessage = $"{errorMessage} Error details: {errorResponse}";
             }
             else if (response.StatusCode == HttpStatusCode.NotFound)

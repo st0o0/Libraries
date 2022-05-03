@@ -35,7 +35,7 @@ namespace JSLibrary.Extensions
             int bytesRead;
             while ((bytesRead = source.Read(buffer, 0, buffer.Length)) != 0)
             {
-                await destination.WriteAsync(buffer, 0, bytesRead);
+                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                 totalBytesRead += bytesRead;
                 progress.Report(totalBytesRead);
             }

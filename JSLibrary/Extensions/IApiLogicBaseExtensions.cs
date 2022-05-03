@@ -67,34 +67,34 @@ namespace JSLibrary.Extensions
         // Download
         public static async Task<Stream> DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
-            if (model == null || model?.Id == 0) { throw new ArgumentNullException("model is null or id is zero"); }
+            if (model == null || model?.Id == 0) { throw new ArgumentNullException(nameof(model)); }
             HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{ apiLogicBase.DownloadPath}{model.Id}", cancellationToken);
             httpResponse.EnsureSuccessStatusCode();
-            return await httpResponse.Content.ReadAsStreamAsync();
+            return await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
         }
 
         public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
-            if (model == null || model?.Id == 0) { throw new ArgumentNullException("model is null or id is zero"); }
+            if (model == null || model?.Id == 0) { throw new ArgumentNullException(nameof(model)); }
 
             HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{ apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
-            using Stream download = await response.Content.ReadAsStreamAsync();
+            using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
             await download.CopyToAsync(destination, cancellationToken);
         }
 
         public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
-            if (model == null || model?.Id == 0) { throw new ArgumentNullException("model is null or id is zero"); }
+            if (model == null || model?.Id == 0) { throw new ArgumentNullException(nameof(model)); }
 
             HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{ apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             long? contentLength = response.Content.Headers.ContentLength;
-            using Stream download = await response.Content.ReadAsStreamAsync();
+            using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
 
             if (!contentLength.HasValue)
             {
-                await download.CopyToAsync(destination);
+                await download.CopyToAsync(destination, cancellationToken);
                 return;
             }
 
@@ -106,7 +106,7 @@ namespace JSLibrary.Extensions
         // Upload
         public static async Task<ModelType> UploadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, MultipartFormDataContent content, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
-            if (content == null) { throw new ArgumentNullException("Content is null"); }
+            if (content == null) { throw new ArgumentNullException(nameof(content)); }
             HttpResponseMessage responseMessage = await apiLogicBase.HttpClient.PostAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.UploadPath}", content, cancellationToken);
             responseMessage.EnsureSuccessStatusCode();
             return await responseMessage.Content.ReadFromJsonAsync<ModelType>(cancellationToken);

@@ -90,7 +90,7 @@ namespace WPFLibrary.Input
                 {
                     if (!typeof(T).IsNullable())
                     {
-                        return CanExecute(default(T));
+                        return CanExecute(default);
                     }
                 }
                 return CanExecute((T)parameter);
@@ -121,7 +121,7 @@ namespace WPFLibrary.Input
                 {
                     if (!typeof(T).IsNullable())
                     {
-                        Execute(default(T));
+                        Execute(default);
                         return;
                     }
                 }

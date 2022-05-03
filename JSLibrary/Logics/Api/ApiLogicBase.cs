@@ -38,13 +38,13 @@ namespace JSLibrary.Logics.Api
 
         public virtual async Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-            if (id == 0) { throw new ArgumentNullException("Id is null"); }
+            if (id == 0) { throw new ArgumentNullException(nameof(id)); }
             return await HttpClient.GetFromJsonAsync<ModelType>(this.RelativeApiPath + $"{id}", cancellationToken);
         }
 
         public virtual async Task<ModelType> PostAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            if (model == null) { throw new ArgumentNullException("Model is null"); }
+            if (model == null) { throw new ArgumentNullException(nameof(model)); }
             HttpResponseMessage response = await HttpClient.PostAsJsonAsync(this.RelativeApiPath, model, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken);
@@ -52,7 +52,7 @@ namespace JSLibrary.Logics.Api
 
         public virtual async Task<ModelType> PutAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            if (model == null) { throw new ArgumentNullException("Model is null"); }
+            if (model == null) { throw new ArgumentNullException(nameof(model)); }
             HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeApiPath + $"{model.Id}", model, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken);
@@ -60,7 +60,7 @@ namespace JSLibrary.Logics.Api
 
         public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            if (model == null) { throw new ArgumentNullException("Model is null"); }
+            if (model == null) { throw new ArgumentNullException(nameof(model)); }
             HttpResponseMessage response = await HttpClient.DeleteAsJsonAsync(this.RelativeApiPath + $"{model.Id}", model, cancellationToken);
             response.EnsureSuccessStatusCode();
         }

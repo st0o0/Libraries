@@ -31,7 +31,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
             {
                 throw new ArgumentNullException(nameof(actionReference));
             }
-            if (!(actionReference.Target is Action<TPayLoad>))
+            if (actionReference.Target is not Action<TPayLoad>)
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "InvalidDelegateRerefenceTypeException", typeof(Action<TPayLoad>).FullName), nameof(actionReference));
             }
@@ -40,7 +40,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
             {
                 throw new ArgumentNullException(nameof(filterReference));
             }
-            if (!(filterReference.Target is Predicate<TPayLoad>))
+            if (filterReference.Target is not Predicate<TPayLoad>)
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "InvalidDelegateRerefenceTypeException", typeof(Predicate<TPayLoad>).FullName), nameof(filterReference));
             }
@@ -90,7 +90,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
             {
                 return arguments =>
                 {
-                    TPayLoad argument = default(TPayLoad);
+                    TPayLoad argument = default;
                     if (arguments != null && arguments.Length > 0 && arguments[0] != null)
                     {
                         argument = (TPayLoad)arguments[0];

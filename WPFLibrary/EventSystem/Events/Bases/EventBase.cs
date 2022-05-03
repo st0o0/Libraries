@@ -10,7 +10,7 @@ namespace WPFLibrary.EventSystem.Events.Bases
 {
     public abstract class EventBase
     {
-        private readonly List<IEventSubscription> subscriptions = new List<IEventSubscription>();
+        private readonly List<IEventSubscription> subscriptions = new();
 
         /// <summary>
         /// Allows the SynchronizationContext to be set by the EventAggregator for UI Thread Dispatching
@@ -91,7 +91,7 @@ namespace WPFLibrary.EventSystem.Events.Bases
 
         private List<Func<object[], Task>> PruneAndReturnStrategies()
         {
-            List<Func<object[], Task>> result = new List<Func<object[], Task>>();
+            List<Func<object[], Task>> result = new();
 
             lock (Subscriptions)
             {

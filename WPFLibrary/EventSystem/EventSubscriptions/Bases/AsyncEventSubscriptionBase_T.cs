@@ -95,7 +95,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
             {
                 return (args) =>
                 {
-                    TPayLoad argument = default(TPayLoad);
+                    TPayLoad argument = default;
                     if (args != null && args.Length > 0 && args[0] != null)
                     {
                         argument = (TPayLoad)args[0];

@@ -29,7 +29,7 @@ namespace JSLibrary.FileCaches
             {
                 try
                 {
-                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    using FileStream fileStream = new(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
                     await this.ApiLogicBase.DownloadAsync(model, fileStream, cancellationToken);
                 }
                 catch
@@ -48,7 +48,7 @@ namespace JSLibrary.FileCaches
             {
                 try
                 {
-                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    using FileStream fileStream = new(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
                     await this.ApiLogicBase.DownloadAsync(model, fileStream, progress, cancellationToken);
                 }
                 catch
@@ -67,7 +67,7 @@ namespace JSLibrary.FileCaches
             {
                 try
                 {
-                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    using FileStream fileStream = new(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
                     await this.ApiLogicBase.DownloadAsync(model, fileStream, cancellationToken);
                 }
                 catch
@@ -87,7 +87,7 @@ namespace JSLibrary.FileCaches
             {
                 try
                 {
-                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    using FileStream fileStream = new(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
                     await this.ApiLogicBase.DownloadAsync(model, fileStream, progress, cancellationToken);
                 }
                 catch

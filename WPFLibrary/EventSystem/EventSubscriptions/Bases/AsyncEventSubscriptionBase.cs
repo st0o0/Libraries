@@ -26,7 +26,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
             {
                 throw new ArgumentNullException(nameof(actionReference));
             }
-            if (!(actionReference.Target is Action))
+            if (actionReference.Target is not System.Action)
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "InvalidDelegateRerefenceTypeException", typeof(Action).FullName), nameof(actionReference));
             }
