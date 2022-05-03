@@ -1,4 +1,5 @@
-﻿using JSLibrary.FileCaches.Interfaces;
+﻿using JSLibrary.Extensions;
+using JSLibrary.FileCaches.Interfaces;
 using JSLibrary.Logics.Api.Interfaces;
 using System;
 using System.IO;
@@ -8,45 +9,92 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.FileCaches
 {
-    public class FileCache<ModelType, ApiLogicType> : IFileCache<ModelType, ApiLogicType> where ModelType : class, IFileCacheModel where ApiLogicType : IApiLogicBase<ModelType>
+    public class FileCache<ModelType, ApiLogicType> : IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IApiLogicBase<ModelType> where ModelType : class, IFileCacheModel
     {
-        private readonly IApiLogicBase<ModelType> apiLogicBase;
-
-        private readonly string folderName = "FileCache";
-        private readonly int afterXDays = 14;
-
-        public FileCache(IApiLogicBase<ModelType> apiLogicBase, IFileCacheSettings fileCacheSettings)
+        public FileCache(ApiLogicType apiLogicBase, string folderName = "Cache")
         {
-            this.folderName = fileCacheSettings.FolderName;
-            this.afterXDays = fileCacheSettings.DeleteFilesAfterXDays;
+            this.ApiLogicBase = apiLogicBase;
+            this.FolderName = folderName;
         }
 
-        public FileCache(IApiLogicBase<ModelType> apiLogicBase)
-        {
-            this.apiLogicBase = apiLogicBase;
-        }
+        public ApiLogicType ApiLogicBase { get; }
 
-        public IApiLogicBase<ModelType> ApiLogicBase => this.apiLogicBase;
+        public string FolderName { get; }
 
         public async Task DownloadAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            string filepath = this.GetFilePath(model);
+            string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(filepath));
             if (!File.Exists(filepath))
             {
-                using Stream downloadStream = await this.ApiLogicBase.DownloadAsync(model.Id, cancellationToken);
-                using FileStream fileStream = File.Create(filepath);
-                await downloadStream.CopyToAsync(fileStream, cancellationToken);
+                try
+                {
+                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    await this.ApiLogicBase.DownloadAsync(model, fileStream, cancellationToken);
+                }
+                catch
+                {
+                    File.Delete(filepath);
+                    throw;
+                }
+            }
+        }
+
+        public async Task DownloadAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
+        {
+            string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+            if (!File.Exists(filepath))
+            {
+                try
+                {
+                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    await this.ApiLogicBase.DownloadAsync(model, fileStream, progress, cancellationToken);
+                }
+                catch
+                {
+                    File.Delete(filepath);
+                    throw;
+                }
             }
         }
 
         public async Task<string> GetFilePathAsync(ModelType model, CancellationToken cancellationToken = default)
         {
-            string filepath = this.GetFilePath(model);
+            string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(filepath));
             if (!File.Exists(filepath))
             {
-                using Stream downloadStream = await this.ApiLogicBase.DownloadAsync(model.Id, cancellationToken);
-                using FileStream fileStream = File.Create(filepath);
-                await downloadStream.CopyToAsync(fileStream, cancellationToken);
+                try
+                {
+                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    await this.ApiLogicBase.DownloadAsync(model, fileStream, cancellationToken);
+                }
+                catch
+                {
+                    File.Delete(filepath);
+                    throw;
+                }
+            }
+            return filepath;
+        }
+
+        public async Task<string> GetFilePathAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
+        {
+            string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+            if (!File.Exists(filepath))
+            {
+                try
+                {
+                    using FileStream fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    await this.ApiLogicBase.DownloadAsync(model, fileStream, progress, cancellationToken);
+                }
+                catch
+                {
+                    File.Delete(filepath);
+                    throw;
+                }
             }
             return filepath;
         }
@@ -57,19 +105,22 @@ namespace JSLibrary.FileCaches
             return File.OpenRead(filepath);
         }
 
-        public void CleanCheck()
+        public async Task<FileStream> GetFileStreamAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
-            // TODO: not finished
-            Directory
-            .GetDirectories("")
-            .SelectMany(x => Directory.GetFiles(x))
-            .Select(s => new FileInfo(s))
-            .Where(fi => fi.CreationTimeUtc < DateTime.UtcNow.Subtract(TimeSpan.FromDays(this.afterXDays)))
-            .ToList()
-            .ForEach(x => x.Delete());
+            string filepath = await this.GetFilePathAsync(model, progress, cancellationToken);
+            return File.OpenRead(filepath);
         }
 
-        private string GetFilePath(ModelType model) => Path.Combine("%TEMP%", folderName, model.FilePath, model.FileName);
+        public void CheckForClean(TimeSpan timeSpan)
+        {
+            Directory
+            .GetDirectories(Path.Combine(GetCachePath()), "", SearchOption.AllDirectories)
+            .SelectMany(x => Directory.GetFiles(x))
+            .Where(s => File.GetLastAccessTimeUtc(s) < DateTime.UtcNow.Subtract(timeSpan))
+            .ToList()
+            .ForEach(s => File.Delete(s));
+        }
+
+        private string GetCachePath() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), this.FolderName);
     }
 }

@@ -9,16 +9,20 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.FileCaches.Interfaces
 {
-    public interface IFileCache<ModelType, ApiLogicType> where ModelType : class, IAPIModel where ApiLogicType : IApiLogicBase<ModelType>
+    public interface IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IApiLogicBase<ModelType> where ModelType : class, IFileCacheModel
     {
-        IApiLogicBase<ModelType> ApiLogicBase { get; }
-
         Task DownloadAsync(ModelType model, CancellationToken cancellationToken = default);
+
+        Task DownloadAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default);
 
         Task<string> GetFilePathAsync(ModelType model, CancellationToken cancellationToken = default);
 
+        Task<string> GetFilePathAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default);
+
         Task<FileStream> GetFileStreamAsync(ModelType model, CancellationToken cancellationToken = default);
 
-        void CleanCheck();
+        Task<FileStream> GetFileStreamAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default);
+
+        void CheckForClean(TimeSpan timeSpan);
     }
 }

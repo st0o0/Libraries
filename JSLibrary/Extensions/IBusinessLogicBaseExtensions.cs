@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Extensions
 {
-    public static class IBusinessLogicExtensions
+    public static class IBusinessLogicBaseExtensions
     {
         public static async Task AddManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {

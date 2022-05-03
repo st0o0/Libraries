@@ -25,9 +25,5 @@ namespace JSLibrary.Logics.Api.Interfaces
         Task<ModelType> PutAsync(ModelType model, CancellationToken cancellationToken = default);
 
         Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default);
-
-        Task<ModelType> UploadAsync(MultipartFormDataContent content, CancellationToken cancellationToken = default);
-
-        Task<Stream> DownloadAsync(int id, CancellationToken cancellationToken = default);
     }
 }
