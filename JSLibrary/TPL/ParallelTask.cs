@@ -37,6 +37,28 @@ namespace JSLibrary.TPL
             await ab.Completion;
         }
 
+        public static async Task TaskManyAsync<InputType>(IEnumerable<InputType> items, Func<InputType, Task> func, CancellationToken cancellationToken = default)
+        {
+            ExecutionDataflowBlockOptions edflbo = new()
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken,
+                BoundedCapacity = items.Count(),
+                EnsureOrdered = true
+            };
+
+            ActionBlock<InputType> ab = new(func, edflbo);
+
+            foreach (InputType input in items)
+            {
+                await ab.SendAsync(input, cancellationToken);
+            }
+
+            ab.Complete();
+
+            await ab.Completion;
+        }
+
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, OutputType> func, CancellationToken cancellationToken = default)
         {
             SemaphoreSlim semaphoreSlim = new(1, 1);

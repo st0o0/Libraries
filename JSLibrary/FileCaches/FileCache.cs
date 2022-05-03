@@ -102,13 +102,13 @@ namespace JSLibrary.FileCaches
         public async Task<FileStream> GetFileStreamAsync(ModelType model, CancellationToken cancellationToken = default)
         {
             string filepath = await this.GetFilePathAsync(model, cancellationToken);
-            return File.OpenRead(filepath);
+            return new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
         public async Task<FileStream> GetFileStreamAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             string filepath = await this.GetFilePathAsync(model, progress, cancellationToken);
-            return File.OpenRead(filepath);
+            return new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
         public void CheckForClean(TimeSpan timeSpan)
