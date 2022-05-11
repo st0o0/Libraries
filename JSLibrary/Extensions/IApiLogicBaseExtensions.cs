@@ -49,6 +49,12 @@ namespace JSLibrary.Extensions
             return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.PutAsync(x, cancellationToken), progress, cancellationToken);
         }
 
+        public static async Task DeleteManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        {
+            if (items?.Count() == 0) { return; }
+            await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.DeleteAsync(item, cancellationToken), cancellationToken);
+        }
+
         public static async Task DownloadManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<(ModelType model, Stream stream)> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             if (items?.Count() == 0) { return; }

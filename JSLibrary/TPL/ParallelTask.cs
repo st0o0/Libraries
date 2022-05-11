@@ -21,7 +21,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -43,7 +42,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -68,7 +66,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -84,7 +81,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -109,7 +106,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = itemCount,
                 EnsureOrdered = true
             };
 
@@ -126,7 +122,7 @@ namespace JSLibrary.TPL
                     progress.Report((itemCount / outputs.Count) * 100.0);
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = itemCount, CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -149,7 +145,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -165,7 +160,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -188,7 +183,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -204,7 +198,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -229,7 +223,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = itemCount,
                 EnsureOrdered = true
             };
 
@@ -246,7 +239,7 @@ namespace JSLibrary.TPL
                     progress.Report((itemCount / outputs.Count) * 100.0);
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = itemCount, CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -269,7 +262,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -285,7 +277,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -309,7 +301,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -326,7 +317,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -352,7 +343,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = itemCount,
                 EnsureOrdered = true
             };
 
@@ -370,7 +360,7 @@ namespace JSLibrary.TPL
                     progress.Report((itemCount / outputs.Count) * 100.0);
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = itemCount, CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -394,7 +384,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -411,7 +400,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -435,7 +424,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -444,7 +432,7 @@ namespace JSLibrary.TPL
             ActionBlock<OutputType> ab = new(x =>
             {
                 outputs.Add(x);
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -468,7 +456,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -485,7 +472,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2, SingleProducerConstrained = true, EnsureOrdered = true });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2, SingleProducerConstrained = true, EnsureOrdered = true });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -509,7 +496,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -526,7 +512,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -552,7 +538,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = itemCount,
                 EnsureOrdered = true
             };
 
@@ -570,7 +555,7 @@ namespace JSLibrary.TPL
                     progress.Report((itemCount / outputs.Count) * 100.0);
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = itemCount, CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -594,7 +579,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -611,7 +595,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -635,7 +619,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -652,7 +635,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -676,7 +659,6 @@ namespace JSLibrary.TPL
             {
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism,
                 CancellationToken = cancellationToken,
-                BoundedCapacity = items.Count(),
                 EnsureOrdered = true
             };
 
@@ -693,7 +675,7 @@ namespace JSLibrary.TPL
                 {
                     semaphoreSlim.Release();
                 }
-            }, new ExecutionDataflowBlockOptions() { BoundedCapacity = items.Count(), CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
+            }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
 
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
