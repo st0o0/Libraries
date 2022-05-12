@@ -7,9 +7,6 @@ namespace JSLibrary.Extensions
 {
     public static class HttpContentExtensions
     {
-        public static async Task<TValue> ReadFromJsonAsync<TValue>(this HttpContent content, CancellationToken cancellationToken = default)
-        {
-            return await JsonSerializer.DeserializeAsync<TValue>(await content.ReadAsStreamAsync(cancellationToken));
-        }
+        public static async Task<TValue> ReadFromJsonAsync<TValue>(this HttpContent content, CancellationToken cancellationToken = default) => await JsonSerializer.DeserializeAsync<TValue>(await content.ReadAsStreamAsync(cancellationToken));
     }
 }
