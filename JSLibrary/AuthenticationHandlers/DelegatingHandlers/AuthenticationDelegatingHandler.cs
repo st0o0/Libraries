@@ -32,7 +32,7 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
 
             if (this.accessControlHttpClient.BaseAddress == null)
             {
-                throw new Exception($"{nameof(HttpClient.BaseAddress)} should be set to Identity Server url");
+                throw new Exception($"{nameof(HttpClient.BaseAddress)} should be set to Identity Server URL");
             }
 
             if (!this.accessControlHttpClient.BaseAddress.AbsoluteUri.EndsWith("/"))
@@ -54,7 +54,7 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
 
             if (this.accessControlHttpClient.BaseAddress == null)
             {
-                throw new Exception($"{nameof(HttpClient.BaseAddress)} should be set to Identity Server url");
+                throw new Exception($"{nameof(HttpClient.BaseAddress)} should be set to Identity Server URL");
             }
 
             if (this.accessControlHttpClient.BaseAddress?.AbsoluteUri.EndsWith("/") == false)
@@ -103,8 +103,7 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
         private async Task<ITokenResponse> GetNewTokenAsync(IClientCredentials credentials, CancellationToken cancellationToken = default)
         {
             HttpResponseMessage response = await accessControlHttpClient.PostAsJsonAsync(tokenEndpoint, credentials, cancellationToken);
-
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
                 ITokenResponse tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken: cancellationToken);
                 return tokenResponse;
@@ -116,7 +115,7 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
 
         private static async Task<string> GetErrorMessageAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
-            string errorMessage = $"Error occured while trying to get access token from identity authority {response.RequestMessage.RequestUri}.";
+            string errorMessage = $"Error occurred while trying to get access token from identity authority {response.RequestMessage.RequestUri}.";
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {

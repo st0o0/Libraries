@@ -64,7 +64,6 @@ namespace JSLibrary.Extensions
         public static async Task DownloadManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<(ModelType model, Stream stream)> items, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             if (items?.Count() == 0) { return; }
-
             int itemCount = items.Count();
             IProgress<double> relativProgress = new Progress<double>(x => progress.Report(x / itemCount));
             await ParallelTask.TaskManyAsync(items, async tuple => await apiLogicBase.DownloadAsync(tuple.model, tuple.stream, relativProgress, cancellationToken), cancellationToken);
@@ -82,7 +81,6 @@ namespace JSLibrary.Extensions
         public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             if (model == null || model?.Id == 0) { throw new ArgumentNullException(nameof(model)); }
-
             HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -92,7 +90,6 @@ namespace JSLibrary.Extensions
         public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             if (model == null || model?.Id == 0) { throw new ArgumentNullException(nameof(model)); }
-
             HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             long? contentLength = response.Content.Headers.ContentLength;

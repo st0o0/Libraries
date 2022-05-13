@@ -11,6 +11,8 @@ namespace JSLibrary.TPL
     {
         private static int multiplicator = 2;
 
+        private static TaskScheduler taskScheduler;
+
         public static void SetMultiplicator(int value) => multiplicator = value;
 
         public static int MaxDegreeOfParallelism => Convert.ToInt32(Math.Floor((Environment.ProcessorCount * 0.75) * multiplicator));
@@ -32,7 +34,6 @@ namespace JSLibrary.TPL
             }
 
             ab.Complete();
-
             await ab.Completion;
         }
 
@@ -53,7 +54,6 @@ namespace JSLibrary.TPL
             }
 
             ab.Complete();
-
             await ab.Completion;
         }
 
@@ -89,8 +89,8 @@ namespace JSLibrary.TPL
             {
                 await tb.SendAsync(input, cancellationToken);
             }
-            tb.Complete();
 
+            tb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -130,8 +130,8 @@ namespace JSLibrary.TPL
             {
                 await tb.SendAsync(input, cancellationToken);
             }
-            tb.Complete();
 
+            tb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -168,8 +168,8 @@ namespace JSLibrary.TPL
             {
                 await tb.SendAsync(input, cancellationToken);
             }
+            
             tb.Complete();
-
             await ab.Completion;
             return outputs;
         }
@@ -206,8 +206,8 @@ namespace JSLibrary.TPL
             {
                 await tb.SendAsync(input, cancellationToken);
             }
-            tb.Complete();
 
+            tb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -247,8 +247,8 @@ namespace JSLibrary.TPL
             {
                 await tb.SendAsync(input, cancellationToken);
             }
-            tb.Complete();
 
+            tb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -287,7 +287,6 @@ namespace JSLibrary.TPL
             }
 
             tb.Complete();
-
             await ab.Completion;
             return outputs;
         }
@@ -326,8 +325,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
-            tmb.Complete();
 
+            tmb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -369,8 +368,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
-            tmb.Complete();
 
+            tmb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -409,8 +408,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
+            
             tmb.Complete();
-
             await ab.Completion;
             return outputs;
         }
@@ -441,8 +440,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
+            
             tmb.Complete();
-
             await ab.Completion;
             return outputs;
         }
@@ -481,8 +480,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
-            tmb.Complete();
 
+            tmb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -521,8 +520,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
-            tmb.Complete();
 
+            tmb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -564,8 +563,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
-            tmb.Complete();
 
+            tmb.Complete();
             await ab.Completion;
             return outputs;
         }
@@ -604,8 +603,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
+            
             tmb.Complete();
-
             await ab.Completion;
             return outputs;
         }
@@ -644,8 +643,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
+            
             tmb.Complete();
-
             await ab.Completion;
             return outputs;
         }
@@ -684,8 +683,8 @@ namespace JSLibrary.TPL
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
+            
             tmb.Complete();
-
             await ab.Completion;
             return outputs;
         }
