@@ -14,7 +14,7 @@ namespace WPFLibrary.Input
         bool CanBeCanceled { get; }
 
         /// <summary>
-        /// Gets a value indicating whether a cancelation request has been issued for the current operation.
+        /// Gets a value indicating whether a cancellation request has been issued for the current operation.
         /// </summary>
         bool IsCancellationRequested { get; }
 
@@ -25,18 +25,18 @@ namespace WPFLibrary.Input
 
         /// <summary>
         /// Provides a more specific version of <see cref="System.Windows.Input.ICommand.Execute"/>,
-        /// also returning the <see cref="Task"/> representing the async operation being executed.
+        /// also returning the <see cref="Task"/> representing the <see langword="async"/> operation being executed.
         /// </summary>
         /// <param name="parameter">The input parameter.</param>
-        /// <returns>The <see cref="Task"/> representing the async operation being executed.</returns>
+        /// <returns>The <see cref="Task"/> representing the <see langword="async"/> operation being executed.</returns>
         Task ExecuteAsync(object parameter);
 
         /// <summary>
-        /// Communicates a request for cancelation.
+        /// Communicates a request for cancellation.
         /// </summary>
         /// <remarks>
-        /// If the underlying command is not running, or if it does not support cancelation, this method will perform no action.
-        /// Note that even with a successful cancelation, the completion of the current operation might not be immediate.
+        /// If the underlying command is not running, or if it does not support cancellation, this method will perform no action.
+        /// Note that even with a successful cancellation, the completion of the current operation might not be immediate.
         /// </remarks>
         void Cancel();
     }

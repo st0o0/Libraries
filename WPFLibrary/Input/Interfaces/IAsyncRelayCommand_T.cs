@@ -13,7 +13,7 @@ namespace WPFLibrary.Input
         /// Provides a strongly-typed variant of <see cref="IAsyncRelayCommand.ExecuteAsync"/>.
         /// </summary>
         /// <param name="parameter">The input parameter.</param>
-        /// <returns>The <see cref="Task"/> representing the async operation being executed.</returns>
+        /// <returns>The <see cref="Task"/> representing the <see langword="async"/> operation being executed.</returns>
         Task ExecuteAsync(T? parameter);
     }
 }

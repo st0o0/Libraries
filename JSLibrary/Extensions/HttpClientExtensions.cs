@@ -24,17 +24,6 @@ namespace JSLibrary.Extensions
             return await responseMessage.Content.ReadFromJsonAsync<TValue>(cancellationToken);
         }
 
-        // Delete
-        public static async Task<HttpResponseMessage> DeleteAsJsonAsync<TValue>(this HttpClient httpClient, string requestUri, TValue value, CancellationToken cancellationToken = default)
-        {
-            return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, requestUri) { Content = Serialize(value) }, cancellationToken);
-        }
-
-        public static async Task<HttpResponseMessage> DeleteAsJsonAsync<TValue>(this HttpClient httpClient, Uri requestUri, TValue value, CancellationToken cancellationToken = default)
-        {
-            return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, requestUri) { Content = Serialize(value) }, cancellationToken);
-        }
-
         // Post
 
         public static async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(this HttpClient httpClient, string requestUri, TValue value, CancellationToken cancellationToken = default)
@@ -57,6 +46,17 @@ namespace JSLibrary.Extensions
         public static async Task<HttpResponseMessage> PutAsJsonAsync<TValue>(this HttpClient httpClient, Uri requestUri, TValue value, CancellationToken cancellationToken = default)
         {
             return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = Serialize(value) }, cancellationToken);
+        }
+
+        // Delete
+        public static async Task<HttpResponseMessage> DeleteAsJsonAsync<TValue>(this HttpClient httpClient, string requestUri, TValue value, CancellationToken cancellationToken = default)
+        {
+            return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, requestUri) { Content = Serialize(value) }, cancellationToken);
+        }
+
+        public static async Task<HttpResponseMessage> DeleteAsJsonAsync<TValue>(this HttpClient httpClient, Uri requestUri, TValue value, CancellationToken cancellationToken = default)
+        {
+            return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, requestUri) { Content = Serialize(value) }, cancellationToken);
         }
 
         // utf8json Serialize

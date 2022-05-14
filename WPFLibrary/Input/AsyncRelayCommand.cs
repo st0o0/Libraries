@@ -73,7 +73,7 @@ namespace WPFLibrary.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand"/> class that can always execute.
         /// </summary>
-        /// <param name="cancelableExecute">The cancelable execution logic.</param>
+        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
         public AsyncRelayCommand(Func<CancellationToken, Task> cancelableExecute)
         {
             this.cancellationTokenSource = new CancellationTokenSource();
@@ -95,7 +95,7 @@ namespace WPFLibrary.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand"/> class.
         /// </summary>
-        /// <param name="cancelableExecute">The cancelable execution logic.</param>
+        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         public AsyncRelayCommand(Func<CancellationToken, Task> cancelableExecute, Expression<Func<bool>> canExecute)
         {

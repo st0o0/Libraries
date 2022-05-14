@@ -75,7 +75,7 @@ namespace WPFLibrary.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class that can always execute.
         /// </summary>
-        /// <param name="cancelableExecute">The cancelable execution logic.</param>
+        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, CastTypes castTypes = CastTypes.SoftCast)
         {
@@ -101,7 +101,7 @@ namespace WPFLibrary.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class.
         /// </summary>
-        /// <param name="cancelableExecute">The cancelable execution logic.</param>
+        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, Expression<Func<T, bool>> canExecute, CastTypes castTypes = CastTypes.SoftCast)
