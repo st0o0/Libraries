@@ -12,10 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AuthHelpers\Interfaces\" />
     <Folder Include="Extensions\" />
-    <Folder Include="Managements\" />
-    <Folder Include="Settings\Interfaces\" />
   </ItemGroup>
 
 </Project>
