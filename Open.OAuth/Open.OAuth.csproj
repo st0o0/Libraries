@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Alvaro Rivoir</Authors>
+    <Description>.Net Standard OAuth library</Description>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
+
+</Project>

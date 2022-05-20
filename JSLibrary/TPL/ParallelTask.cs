@@ -102,50 +102,6 @@ namespace JSLibrary.TPL
             return outputs;
         }
 
-        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, OutputType> func, IProgress<double> progress, CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
-
-            int itemCount = items.Count();
-
-            SemaphoreSlim semaphoreSlim = new(1, 1);
-            List<OutputType> outputs = new();
-
-            ExecutionDataflowBlockOptions edflbo = new()
-            {
-                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
-                CancellationToken = cancellationToken,
-                EnsureOrdered = true
-            };
-
-            TransformBlock<InputType, OutputType> tb = new(func, edflbo);
-            ActionBlock<OutputType> ab = new(async item =>
-            {
-                try
-                {
-                    await semaphoreSlim.WaitAsync();
-                    outputs.Add(item);
-                }
-                finally
-                {
-                    progress.Report((itemCount / outputs.Count) * 100.0);
-                    semaphoreSlim.Release();
-                }
-            }, edflbo);
-
-            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            foreach (InputType item in items.ToList())
-            {
-                await tb.SendAsync(item, cancellationToken);
-            }
-
-            tb.Complete();
-            await ab.Completion;
-            return outputs;
-        }
-
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<OutputType>> func, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
@@ -215,50 +171,6 @@ namespace JSLibrary.TPL
                     semaphoreSlim.Release();
                 }
             }, new ExecutionDataflowBlockOptions() { CancellationToken = cancellationToken, MaxDegreeOfParallelism = 2 });
-
-            tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            foreach (InputType item in items.ToList())
-            {
-                await tb.SendAsync(item, cancellationToken);
-            }
-
-            tb.Complete();
-            await ab.Completion;
-            return outputs;
-        }
-
-        public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<OutputType>> func, IProgress<double> progress, CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
-
-            int itemCount = items.Count();
-
-            SemaphoreSlim semaphoreSlim = new(1, 1);
-            List<OutputType> outputs = new();
-
-            ExecutionDataflowBlockOptions edflbo = new()
-            {
-                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
-                CancellationToken = cancellationToken,
-                EnsureOrdered = true
-            };
-
-            TransformBlock<InputType, OutputType> tb = new(func, edflbo);
-            ActionBlock<OutputType> ab = new(async item =>
-            {
-                try
-                {
-                    await semaphoreSlim.WaitAsync();
-                    outputs.Add(item);
-                }
-                finally
-                {
-                    progress.Report((itemCount / outputs.Count) * 100.0);
-                    semaphoreSlim.Release();
-                }
-            }, edflbo);
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
