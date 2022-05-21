@@ -11,10 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFLibrary", "WPFLibrary\WP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlickrLibrary", "FlickrLibrary\FlickrLibrary.csproj", "{C1E418B8-59DA-4431-94D1-AE17A1D36C23}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Open.Flickr", "Open.Flickr\Open.Flickr.csproj", "{A523E9CD-28A0-4EED-BD39-5AFF795C4B25}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Open.OAuth", "Open.OAuth\Open.OAuth.csproj", "{989E6189-8977-43E9-A198-1550DBACB326}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,14 +33,6 @@ Global
 		{C1E418B8-59DA-4431-94D1-AE17A1D36C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1E418B8-59DA-4431-94D1-AE17A1D36C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1E418B8-59DA-4431-94D1-AE17A1D36C23}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A523E9CD-28A0-4EED-BD39-5AFF795C4B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A523E9CD-28A0-4EED-BD39-5AFF795C4B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A523E9CD-28A0-4EED-BD39-5AFF795C4B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A523E9CD-28A0-4EED-BD39-5AFF795C4B25}.Release|Any CPU.Build.0 = Release|Any CPU
-		{989E6189-8977-43E9-A198-1550DBACB326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{989E6189-8977-43E9-A198-1550DBACB326}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{989E6189-8977-43E9-A198-1550DBACB326}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{989E6189-8977-43E9-A198-1550DBACB326}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
