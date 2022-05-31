@@ -65,6 +65,11 @@ namespace JSLibrary.FileCaches
 
         public void CheckForClean(TimeSpan timeSpan)
         {
+            if (timeSpan < TimeSpan.Zero)
+            {
+                throw new ArgumentNullException(nameof(timeSpan));
+            }
+
             Directory
             .GetDirectories(GetCachePath(), "", SearchOption.AllDirectories)
             .SelectMany(x => Directory.GetFiles(x))

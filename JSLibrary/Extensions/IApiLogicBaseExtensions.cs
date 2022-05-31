@@ -21,14 +21,6 @@ namespace JSLibrary.Extensions
             return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.GetAsync(x, cancellationToken), cancellationToken);
         }
 
-        public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<int> items, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
-        {
-            ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
-
-            return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.GetAsync(x, cancellationToken), cancellationToken);
-        }
-
         public static async Task<IEnumerable<ModelType>> PostManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
@@ -37,23 +29,7 @@ namespace JSLibrary.Extensions
             return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.PostAsync(x, cancellationToken), cancellationToken);
         }
 
-        public static async Task<IEnumerable<ModelType>> PostManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
-        {
-            ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
-
-            return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.PostAsync(x, cancellationToken), cancellationToken);
-        }
-
         public static async Task<IEnumerable<ModelType>> PutManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
-        {
-            ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
-
-            return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.PutAsync(x, cancellationToken), cancellationToken);
-        }
-
-        public static async Task<IEnumerable<ModelType>> PutManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
             if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
@@ -75,16 +51,6 @@ namespace JSLibrary.Extensions
             if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
 
             await ParallelTask.TaskManyAsync(items, async tuple => await apiLogicBase.DownloadAsync(tuple.model, tuple.stream, cancellationToken), cancellationToken);
-        }
-
-        public static async Task DownloadManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<(ModelType model, Stream stream)> items, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
-        {
-            ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
-
-            int itemCount = items.Count();
-            IProgress<double> relativProgress = new Progress<double>(x => progress.Report(x / itemCount));
-            await ParallelTask.TaskManyAsync(items, async tuple => await apiLogicBase.DownloadAsync(tuple.model, tuple.stream, relativProgress, cancellationToken), cancellationToken);
         }
 
         // Download
