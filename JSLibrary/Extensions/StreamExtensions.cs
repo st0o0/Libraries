@@ -30,7 +30,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
             }
 
-            Byte[] buffer = new Byte[bufferSize];
+            byte[] buffer = new byte[bufferSize];
             double totalBytesRead = 0;
             int bytesRead;
             while ((bytesRead = source.Read(buffer, 0, buffer.Length)) != 0)

@@ -18,7 +18,7 @@ namespace JSLibrary.Extensions
             ArgumentNullException.ThrowIfNull(items, nameof(items));
             if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
 
-            return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.GetAsync(x, cancellationToken), cancellationToken);
+            return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.GetAsync(item, cancellationToken), cancellationToken);
         }
 
         public static async Task<IEnumerable<ModelType>> PostManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
@@ -26,7 +26,7 @@ namespace JSLibrary.Extensions
             ArgumentNullException.ThrowIfNull(items, nameof(items));
             if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
 
-            return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.PostAsync(x, cancellationToken), cancellationToken);
+            return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.PostAsync(item, cancellationToken), cancellationToken);
         }
 
         public static async Task<IEnumerable<ModelType>> PutManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
@@ -34,7 +34,7 @@ namespace JSLibrary.Extensions
             ArgumentNullException.ThrowIfNull(items, nameof(items));
             if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
 
-            return await ParallelTask.TaskManyAsync(items, async x => await apiLogicBase.PutAsync(x, cancellationToken), cancellationToken);
+            return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.PutAsync(item, cancellationToken), cancellationToken);
         }
 
         public static async Task DeleteManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel

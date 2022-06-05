@@ -25,7 +25,6 @@ namespace JSLibrary.Extensions
         }
 
         // Post
-
         public static async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(this HttpClient httpClient, string requestUri, TValue value, CancellationToken cancellationToken = default)
         {
             return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = Serialize(value) }, cancellationToken);
@@ -37,7 +36,6 @@ namespace JSLibrary.Extensions
         }
 
         // Put
-
         public static async Task<HttpResponseMessage> PutAsJsonAsync<TValue>(this HttpClient httpClient, string requestUri, TValue value, CancellationToken cancellationToken = default)
         {
             return await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = Serialize(value) }, cancellationToken);

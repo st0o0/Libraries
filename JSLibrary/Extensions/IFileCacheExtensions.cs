@@ -13,14 +13,14 @@ namespace JSLibrary.Extensions
     {
         public static async Task DownloadManyAsync<ModelType, ApiLogicType>(this IFileCache<ModelType, ApiLogicType> fileCache, IEnumerable<ModelType> models, CancellationToken cancellationToken = default) where ApiLogicType : class, IApiLogicBase<ModelType> where ModelType : class, IFileCacheModel
         {
-            await ParallelTask.TaskManyAsync(models, async x => await fileCache.DownloadAsync(x, cancellationToken), cancellationToken);
+            await ParallelTask.TaskManyAsync(models, async filepath => await fileCache.DownloadAsync(filepath, cancellationToken), cancellationToken);
         }
 
         public static async Task DownloadManyAsync<ModelType, ApiLogicType>(this IFileCache<ModelType, ApiLogicType> fileCache, IEnumerable<ModelType> models, IProgress<double> progress, CancellationToken cancellationToken = default) where ApiLogicType : class, IApiLogicBase<ModelType> where ModelType : class, IFileCacheModel
         {
             int itemCount = models.Count();
-            IProgress<double> relativProgress = new Progress<double>(x => progress.Report(x / itemCount));
-            await ParallelTask.TaskManyAsync(models, async x => await fileCache.DownloadAsync(x, relativProgress, cancellationToken), cancellationToken);
+            IProgress<double> relativProgress = new Progress<double>(value => progress.Report(value / itemCount));
+            await ParallelTask.TaskManyAsync(models, async filepath => await fileCache.DownloadAsync(filepath, relativProgress, cancellationToken), cancellationToken);
         }
     }
 }
