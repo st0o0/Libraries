@@ -228,7 +228,10 @@ namespace JSLibrary.TPL
         public static async Task TaskManyAsync<InputType, MiddleType>(IEnumerable<InputType> items, Func<InputType, MiddleType> func, Action<MiddleType> action, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             ExecutionDataflowBlockOptions edflbo = new()
             {
@@ -278,7 +281,10 @@ namespace JSLibrary.TPL
         public static async Task TaskManyAsync<InputType, MiddleType>(IEnumerable<InputType> items, Func<InputType, MiddleType> func0, Func<MiddleType, Task> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             ExecutionDataflowBlockOptions edflbo = new()
             {
@@ -303,7 +309,10 @@ namespace JSLibrary.TPL
         public static async Task TaskManyAsync<InputType, MiddleType>(IEnumerable<InputType> items, Func<InputType, Task<MiddleType>> func0, Func<MiddleType, Task> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             ExecutionDataflowBlockOptions edflbo = new()
             {
@@ -328,7 +337,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, MiddleType> func0, Func<MiddleType, OutputType> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -371,7 +383,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, MiddleType> func0, Func<MiddleType, OutputType> func1, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             int itemCount = items.Count();
 
@@ -417,7 +432,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, MiddleType> func0, Func<MiddleType, IEnumerable<OutputType>> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -460,7 +478,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<MiddleType>> func0, Func<MiddleType, OutputType> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -503,7 +524,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<MiddleType>> func0, Func<MiddleType, IEnumerable<OutputType>> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -546,7 +570,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<MiddleType>> func0, Func<MiddleType, Task<OutputType>> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -589,7 +616,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<MiddleType>> func0, Func<MiddleType, Task<OutputType>> func1, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             int itemCount = items.Count();
 
@@ -635,7 +665,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<MiddleType>> func0, Func<MiddleType, Task<IEnumerable<OutputType>>> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -678,7 +711,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<IEnumerable<MiddleType>>> func0, Func<MiddleType, Task<OutputType>> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -721,7 +757,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, MiddleType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<IEnumerable<MiddleType>>> func0, Func<MiddleType, Task<IEnumerable<OutputType>>> func1, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
