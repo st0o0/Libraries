@@ -77,7 +77,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentNullException(nameof(model));
             }
 
-            HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", cancellationToken);
+            HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             httpResponse.EnsureSuccessStatusCode();
             return await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
         }
@@ -114,7 +114,7 @@ namespace JSLibrary.Extensions
                 await download.CopyToAsync(destination, cancellationToken);
                 return;
             }
-            IProgress<double> relativeProgess = new Progress<double>(totalBytes => progress.Report((totalBytes / contentLength.Value) * 100.0));
+            IProgress<double> relativeProgess = new Progress<double>(totalBytes => progress.Report((contentLength.Value / totalBytes) * 100.0));
             await download.CopyToAsync(destination, relativeProgess, 81920, cancellationToken);
             progress.Report(100);
         }

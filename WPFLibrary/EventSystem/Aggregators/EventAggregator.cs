@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using WPFLibrary.EventSystem.Aggregators.Interfaces;
 using WPFLibrary.EventSystem.Events.Bases;
 
 namespace WPFLibrary.EventSystem.Aggregators
@@ -33,7 +34,7 @@ namespace WPFLibrary.EventSystem.Aggregators
                     {
                         SynchronizationContext = syncContext
                     };
-                    events[typeof(TEventType)] = newEvent;
+                    events.TryAdd(typeof(TEventType), newEvent);
                     return newEvent;
                 }
             }

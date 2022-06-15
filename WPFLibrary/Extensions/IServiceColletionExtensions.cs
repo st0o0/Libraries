@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using WPFLibrary.EventSystem.Aggregators;
+using WPFLibrary.EventSystem.Aggregators.Interfaces;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

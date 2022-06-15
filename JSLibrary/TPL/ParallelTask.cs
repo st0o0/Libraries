@@ -9,16 +9,19 @@ namespace JSLibrary.TPL
 {
     public static class ParallelTask
     {
-        private static int multiplicator = 2;
+        private static int maxDegreeOfParallelism = Convert.ToInt32(Math.Floor((Environment.ProcessorCount * 0.75) * 2));
 
-        public static void SetMultiplicator(int value) => multiplicator = value;
+        public static void SetMultiplicator(int value) => maxDegreeOfParallelism = Convert.ToInt32(Math.Floor((Environment.ProcessorCount * 0.75) * value));
 
-        public static int MaxDegreeOfParallelism => Convert.ToInt32(Math.Floor((Environment.ProcessorCount * 0.75) * multiplicator));
+        public static int MaxDegreeOfParallelism => maxDegreeOfParallelism;
 
         public static async Task TaskManyAsync<InputType>(IEnumerable<InputType> items, Action<InputType> action, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             ExecutionDataflowBlockOptions edflbo = new()
             {
@@ -29,7 +32,7 @@ namespace JSLibrary.TPL
 
             ActionBlock<InputType> ab = new(action, edflbo);
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await ab.SendAsync(item, cancellationToken);
             }
@@ -41,7 +44,10 @@ namespace JSLibrary.TPL
         public static async Task TaskManyAsync<InputType>(IEnumerable<InputType> items, Func<InputType, Task> func, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             ExecutionDataflowBlockOptions edflbo = new()
             {
@@ -52,7 +58,7 @@ namespace JSLibrary.TPL
 
             ActionBlock<InputType> ab = new(func, edflbo);
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await ab.SendAsync(item, cancellationToken);
             }
@@ -64,7 +70,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, OutputType> func, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -92,7 +101,7 @@ namespace JSLibrary.TPL
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -105,7 +114,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, IEnumerable<OutputType>> func, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -133,7 +145,7 @@ namespace JSLibrary.TPL
 
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tmb.SendAsync(item, cancellationToken);
             }
@@ -146,7 +158,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<OutputType>> func, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -174,7 +189,7 @@ namespace JSLibrary.TPL
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -187,7 +202,10 @@ namespace JSLibrary.TPL
         public static async Task<IEnumerable<OutputType>> TaskManyAsync<InputType, OutputType>(IEnumerable<InputType> items, Func<InputType, Task<IEnumerable<OutputType>>> func, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any()) { throw new ArgumentNullException(nameof(items)); }
+            if (!items.Any())
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
 
             SemaphoreSlim semaphoreSlim = new(1, 1);
             List<OutputType> outputs = new();
@@ -215,7 +233,7 @@ namespace JSLibrary.TPL
 
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -245,7 +263,7 @@ namespace JSLibrary.TPL
 
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType input in items.ToList())
+            foreach (InputType input in new List<InputType>(items))
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
@@ -270,7 +288,7 @@ namespace JSLibrary.TPL
 
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType input in items.ToList())
+            foreach (InputType input in new List<InputType>(items))
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
@@ -298,7 +316,7 @@ namespace JSLibrary.TPL
 
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType input in items.ToList())
+            foreach (InputType input in new List<InputType>(items))
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
@@ -326,7 +344,7 @@ namespace JSLibrary.TPL
 
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType input in items.ToList())
+            foreach (InputType input in new List<InputType>(items))
             {
                 await tmb.SendAsync(input, cancellationToken);
             }
@@ -370,7 +388,7 @@ namespace JSLibrary.TPL
             tb.LinkTo(tb1, new DataflowLinkOptions() { PropagateCompletion = true });
             tb1.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -419,7 +437,7 @@ namespace JSLibrary.TPL
             tb.LinkTo(tb1, new DataflowLinkOptions() { PropagateCompletion = true });
             tb1.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -465,7 +483,7 @@ namespace JSLibrary.TPL
             tb.LinkTo(tmb, new DataflowLinkOptions() { PropagateCompletion = true });
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -511,7 +529,7 @@ namespace JSLibrary.TPL
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tmb.SendAsync(item, cancellationToken);
             }
@@ -557,7 +575,7 @@ namespace JSLibrary.TPL
             tmb.LinkTo(tmb1, new DataflowLinkOptions() { PropagateCompletion = true });
             tmb1.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tmb.SendAsync(item, cancellationToken);
             }
@@ -603,7 +621,7 @@ namespace JSLibrary.TPL
             tb.LinkTo(tb1, new DataflowLinkOptions() { PropagateCompletion = true });
             tb1.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -652,7 +670,7 @@ namespace JSLibrary.TPL
             tb.LinkTo(tb1, new DataflowLinkOptions() { PropagateCompletion = true });
             tb1.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -698,7 +716,7 @@ namespace JSLibrary.TPL
             tb.LinkTo(tmb, new DataflowLinkOptions() { PropagateCompletion = true });
             tmb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tb.SendAsync(item, cancellationToken);
             }
@@ -744,7 +762,7 @@ namespace JSLibrary.TPL
             tmb.LinkTo(tb, new DataflowLinkOptions() { PropagateCompletion = true });
             tb.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tmb.SendAsync(item, cancellationToken);
             }
@@ -790,7 +808,7 @@ namespace JSLibrary.TPL
             tmb.LinkTo(tmb2, new DataflowLinkOptions() { PropagateCompletion = true });
             tmb2.LinkTo(ab, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (InputType item in items.ToList())
+            foreach (InputType item in new List<InputType>(items))
             {
                 await tmb.SendAsync(item, cancellationToken);
             }

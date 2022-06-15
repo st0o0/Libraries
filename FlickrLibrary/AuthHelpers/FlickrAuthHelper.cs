@@ -1,6 +1,5 @@
 ﻿using FlickrLibrary.AuthHelpers.Interfaces;
 using FlickrLibrary.Settings.Interfaces;
-using FlickrNet;
 
 namespace FlickrLibrary.AuthHelpers
 {

@@ -1,6 +1,6 @@
 ﻿using WPFLibrary.EventSystem.Events.Bases;
 
-namespace WPFLibrary.EventSystem.Aggregators
+namespace WPFLibrary.EventSystem.Aggregators.Interfaces
 {
     /// <summary>
     /// Defines an interface to get instances of an event type.

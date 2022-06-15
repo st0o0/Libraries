@@ -9,17 +9,12 @@ namespace JSLibrary.Extensions
     {
         public static async Task CopyToAsync(this Stream source, Stream destination, IProgress<double> progress, int bufferSize = 81920, CancellationToken cancellationToken = default)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(destination, nameof(destination));
+
             if (!source.CanRead)
             {
                 throw new ArgumentException("Has to be readable", nameof(source));
-            }
-            if (destination == null)
-            {
-                throw new ArgumentNullException(nameof(destination));
             }
             if (!destination.CanWrite)
             {

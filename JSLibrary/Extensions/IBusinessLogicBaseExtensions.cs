@@ -1,7 +1,6 @@
 ﻿using JSLibrary.Logics.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,12 +26,22 @@ namespace JSLibrary.Extensions
 
         public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<int> ids, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
         {
-            return (await businessLogic.LoadAsync(cancellationToken)).Where(x => ids.Any(z => z == x.Id)).ToList();
+            List<ModelType> result = new();
+            foreach (int id in ids)
+            {
+                result.Add(await businessLogic.GetAsync(id, cancellationToken));
+            }
+            return result;
         }
 
         public static IEnumerable<ModelType> GetMany<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<int> ids) where DBContextType : DbContext where ModelType : class, IDBModel
         {
-            return businessLogic.Load().Where(x => ids.Any(z => z == x.Id)).ToList();
+            List<ModelType> result = new();
+            foreach (int id in ids)
+            {
+                result.Add(businessLogic.Get(id));
+            }
+            return result;
         }
 
         public static async Task UpdateManyAsync<ModelType, DBContextType>(this IBusinessLogicBase<ModelType, DBContextType> businessLogic, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where ModelType : class, IDBModel
