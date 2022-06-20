@@ -77,7 +77,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentNullException(nameof(model));
             }
 
-            HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseContentRead, cancellationToken);
             httpResponse.EnsureSuccessStatusCode();
             return await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
         }
@@ -90,7 +90,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentNullException(nameof(model));
             }
 
-            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseContentRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
             await download.CopyToAsync(destination, cancellationToken);
@@ -104,7 +104,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentNullException(nameof(model));
             }
 
-            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseContentRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             long? contentLength = response.Content.Headers.ContentLength;
             using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
