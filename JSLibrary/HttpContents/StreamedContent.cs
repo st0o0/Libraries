@@ -1,11 +1,8 @@
 ﻿using JSLibrary.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -149,9 +146,19 @@ namespace JSLibrary.HttpContents
             return await InnerStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
-        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            return await InnerStream.ReadAsync(buffer, cancellationToken);
+        }
+
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)
         {
             await base.WriteAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await base.WriteAsync(buffer, cancellationToken);
         }
 
         public override async Task FlushAsync(CancellationToken cancellationToken)
