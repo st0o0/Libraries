@@ -15,12 +15,16 @@ namespace Microsoft.Extensions.DependencyInjection
            Func<IServiceProvider, string> identityAuthorityProvider,
            Func<IServiceProvider, string> tokenEndpointProvider)
         {
+            ArgumentNullException.ThrowIfNull(credentialsProvider, nameof(credentialsProvider));
+            ArgumentNullException.ThrowIfNull(identityAuthorityProvider, nameof(identityAuthorityProvider));
+            ArgumentNullException.ThrowIfNull(tokenEndpointProvider, nameof(tokenEndpointProvider));
+
             builder.Services.TryAddSingleton<IAccessTokenCacheManager, AccessTokenCacheManager>();
             builder.AddHttpMessageHandler(provider =>
             {
-                var credentials = credentialsProvider.Invoke(provider);
-                var identityAuthority = identityAuthorityProvider.Invoke(provider);
-                var tokenEndpoint = tokenEndpointProvider.Invoke(provider);
+                IClientCredentials credentials = credentialsProvider.Invoke(provider);
+                string identityAuthority = identityAuthorityProvider.Invoke(provider);
+                string tokenEndpoint = tokenEndpointProvider.Invoke(provider);
 
                 return CreateDelegatingHandler(provider, credentials, identityAuthority, tokenEndpoint);
             });
@@ -38,16 +42,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static AuthenticationDelegatingHandler CreateDelegatingHandler(IServiceProvider provider, IClientCredentials credentials, string identityAuthority, string tokenEndpoint)
         {
-            var httpClient = CreateHttpClient(provider, identityAuthority);
-            var accessTokensCacheManager = provider.GetRequiredService<IAccessTokenCacheManager>();
+            HttpClient httpClient = CreateHttpClient(provider, identityAuthority);
+            IAccessTokenCacheManager accessTokensCacheManager = provider.GetRequiredService<IAccessTokenCacheManager>();
 
             return new AuthenticationDelegatingHandler(accessTokensCacheManager, credentials, httpClient, tokenEndpoint);
         }
 
         private static HttpClient CreateHttpClient(IServiceProvider provider, string identityAuthority)
         {
-            var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-            var httpClient = httpClientFactory.CreateClient();
+            IHttpClientFactory httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+            HttpClient httpClient = httpClientFactory.CreateClient();
             httpClient.BaseAddress = new Uri(identityAuthority);
 
             return httpClient;

@@ -7,6 +7,7 @@ namespace JSLibrary.Extensions
     {
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> sources, Func<TSource, TKey> keySelector)
         {
+            ArgumentNullException.ThrowIfNull(keySelector, nameof(keySelector));
             HashSet<TKey> keys = new();
             foreach (TSource element in sources)
             {

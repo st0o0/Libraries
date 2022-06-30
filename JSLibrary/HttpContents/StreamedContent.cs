@@ -14,9 +14,9 @@ namespace JSLibrary.HttpContents
         private readonly Stream _stream;
         private readonly IProgress<double> _progress;
 
-        public StreamedContent(Stream fileStream, IProgress<double> progress, CancellationToken cancellationToken)
+        public StreamedContent(Stream stream, IProgress<double> progress, CancellationToken cancellationToken)
         {
-            _stream = fileStream;
+            _stream = stream;
             _progress = progress;
             _cancellationToken = cancellationToken;
         }
@@ -42,8 +42,7 @@ namespace JSLibrary.HttpContents
             private readonly IProgress<double> _progress;
             private long _position = 0;
 
-            public ContentStream(Stream stream, IProgress<double> progress)
-                : base(stream)
+            public ContentStream(Stream stream, IProgress<double> progress) : base(stream)
             {
                 _progress = progress;
             }

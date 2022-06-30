@@ -109,26 +109,25 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
                 return tokenResponse;
             }
 
-            string errorMessage = await GetErrorMessageAsync(response, cancellationToken);
+            string errorMessage = GetErrorMessage(response);
             throw new Exception(errorMessage);
         }
 
-        private static async Task<string> GetErrorMessageAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
+        private static string GetErrorMessage(HttpResponseMessage response)
         {
             string errorMessage = $"Error occurred while trying to get access token from identity authority {response.RequestMessage.RequestUri}.";
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                string errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-                errorMessage = $"{errorMessage} Error details: {errorResponse}";
+                errorMessage = $"{errorMessage} Error details: {response.Content}";
             }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
+            else if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.NotFound)
             {
-                throw new LoginException($"{errorMessage} Status code: {(int)response.StatusCode} - {response.StatusCode}");
+                throw new LoginException($"{errorMessage} Status code: {(int)response.StatusCode} - {response.Content}");
             }
             else
             {
-                errorMessage = $"{errorMessage} Status code: {(int)response.StatusCode} - {response.StatusCode}";
+                response.EnsureSuccessStatusCode();
             }
 
             return errorMessage;
