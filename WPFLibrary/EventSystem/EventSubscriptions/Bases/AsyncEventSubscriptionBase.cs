@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 using WPFLibrary.EventSystem.SubscriptionTokens;
@@ -22,10 +23,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         ///<exception cref="ArgumentException">When the target of <paramref name="actionReference"/> is not of type <see cref="System.Action"/>.</exception>
         public AsyncEventSubscriptionBase(IDelegateReference actionReference)
         {
-            if (actionReference == null)
-            {
-                throw new ArgumentNullException(nameof(actionReference));
-            }
+            ArgumentNullException.ThrowIfNull(actionReference, nameof(actionReference));
             if (actionReference.Target is not System.Action)
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "InvalidDelegateRerefenceTypeException", typeof(Action).FullName), nameof(actionReference));
@@ -38,7 +36,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// Gets the target <see cref="System.Threading.Tasks"/> that is referenced by the <see cref="IDelegateReference"/>.
         /// </summary>
         /// <value>An <see cref="System.Action"/> or <see langword="null" /> if the referenced target is not alive.</value>
-        public Func<Task> Action => (Func<Task>)actionReference.Target;
+        public Func<CancellationToken, Task> Action => (Func<CancellationToken, Task>)actionReference.Target;
 
         public Delegate Delegate => actionReference.Target;
 
@@ -61,12 +59,16 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <see cref="Delegate">delegates</see>. As long as the returned delegate is not garbage collected,
         /// the <see cref="Action"/> references delegates won't get collected either.
         /// </remarks>
-        public virtual Func<object[], Task> GetExecutionStrategy()
+        public virtual Func<object, CancellationToken, Task> GetExecutionStrategy()
         {
-            Func<Task> action = this.Action;
-            if (action != null)
+            Func<CancellationToken, Task> func = this.Action;
+            if (func != null)
             {
-                return (arg) => { return InvokeAction(action); };
+                return async (arg, ct) =>
+                {
+                    await InvokeDelegate(func, ct);
+                    await Task.CompletedTask;
+                };
             }
             return null;
         }
@@ -76,14 +78,11 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// </summary>
         /// <param name="action">The action to execute.</param>
         /// <exception cref="ArgumentNullException">An <see cref="ArgumentNullException"/> is thrown if <paramref name="action"/> is null.</exception>
-        public virtual Task InvokeAction(Func<Task> action)
+        public virtual Task InvokeDelegate(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
 
-            return action();
+            return action(cancellationToken);
         }
     }
 }

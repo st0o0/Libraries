@@ -32,7 +32,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// </summary>
         /// <param name="action">The action to execute.</param>
         /// <param name="argument">The payload to pass <paramref name="action"/> while invoking it.</param>
-        public override void InvokeAction(Action<TPayLoad> action, TPayLoad argument)
+        public override void InvokeDelegate(Action<TPayLoad> action, TPayLoad argument)
         {
             syncContext.Post((o) => action((TPayLoad)o), argument);
         }

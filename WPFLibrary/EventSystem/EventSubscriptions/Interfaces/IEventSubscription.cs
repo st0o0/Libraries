@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.SubscriptionTokens;
 
@@ -21,6 +22,6 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// Gets the execution strategy to publish this event.
         /// </summary>
         /// <returns>An <see cref="Action{T}"/> with the execution strategy, or <see langword="null" /> if the <see cref="IEventSubscription"/> is no longer valid.</returns>
-        Func<object[], Task> GetExecutionStrategy();
+        Func<object, CancellationToken, Task> GetExecutionStrategy();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.Enums;
 using WPFLibrary.EventSystem.Events.Bases;
@@ -34,7 +35,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <remarks>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<TPayLoad, Task> action)
+        public SubscriptionToken Subscribe(Func<TPayLoad, CancellationToken, Task> action)
         {
             return Subscribe(action, ThreadOption.PublisherThread);
         }
@@ -64,7 +65,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <remarks>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<TPayLoad, Task> action, ThreadOption threadOption)
+        public SubscriptionToken Subscribe(Func<TPayLoad, CancellationToken, Task> action, ThreadOption threadOption)
         {
             return Subscribe(action, threadOption, false);
         }
@@ -98,7 +99,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <para/>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<TPayLoad, Task> action, bool keepSubscriberReferenceAlive)
+        public SubscriptionToken Subscribe(Func<TPayLoad, CancellationToken, Task> action, bool keepSubscriberReferenceAlive)
         {
             return Subscribe(action, ThreadOption.PublisherThread, keepSubscriberReferenceAlive);
         }
@@ -134,7 +135,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <para/>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<TPayLoad, Task> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive)
+        public SubscriptionToken Subscribe(Func<TPayLoad, CancellationToken, Task> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive)
         {
             return Subscribe(action, threadOption, keepSubscriberReferenceAlive, null);
         }
@@ -156,9 +157,15 @@ namespace WPFLibrary.EventSystem.Events
         public virtual SubscriptionToken Subscribe(Action<TPayLoad> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive, Predicate<TPayLoad> filter)
         {
             IDelegateReference actionReference = new DelegateReference(action, keepSubscriberReferenceAlive);
-            IDelegateReference filterReference = filter != null
-                ? new DelegateReference(filter, keepSubscriberReferenceAlive)
-                : (IDelegateReference)new DelegateReference(new Predicate<TPayLoad>(x => true), true);
+            IDelegateReference filterReference;
+            if (filter != null)
+            {
+                filterReference = new DelegateReference(filter, keepSubscriberReferenceAlive);
+            }
+            else
+            {
+                filterReference = new DelegateReference(new Predicate<TPayLoad>(x => true), true);
+            }
 
             if (SynchronizationContext == null && threadOption == ThreadOption.UIThread)
             {
@@ -178,20 +185,20 @@ namespace WPFLibrary.EventSystem.Events
         /// <summary>
         /// Subscribes a delegate to an event.
         /// </summary>
-        /// <param name="action">The delegate that gets executed when the event is published.</param>
+        /// <param name="func">The delegate that gets executed when the event is published.</param>
         /// <param name="threadOption">Specifies on which thread to receive the delegate callback.</param>
         /// <param name="keepSubscriberReferenceAlive">When <see langword="true"/>, the <see cref="PubSubEvent{TPayLoad}"/> keeps a reference to the subscriber so it does not get garbage collected.</param>
         /// <param name="filter">Filter to evaluate if the subscriber should receive the event.</param>
         /// <returns>A <see cref="SubscriptionToken"/> that uniquely identifies the added subscription.</returns>
         /// <remarks>
-        /// If <paramref name="keepSubscriberReferenceAlive"/> is set to <see langword="false" />, <see cref="PubSubEvent{TPayLoad}"/> will maintain a <see cref="WeakReference"/> to the Target of the supplied <paramref name="action"/> delegate.
+        /// If <paramref name="keepSubscriberReferenceAlive"/> is set to <see langword="false" />, <see cref="PubSubEvent{TPayLoad}"/> will maintain a <see cref="WeakReference"/> to the Target of the supplied <paramref name="func"/> delegate.
         /// If not using a WeakReference (<paramref name="keepSubscriberReferenceAlive"/> is <see langword="true" />), the user must explicitly call Unsubscribe for the event when disposing the subscriber in order to avoid memory leaks or unexpected behavior.
         ///
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public virtual SubscriptionToken Subscribe(Func<TPayLoad, Task> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive, Predicate<TPayLoad> filter)
+        public virtual SubscriptionToken Subscribe(Func<TPayLoad, CancellationToken, Task> func, ThreadOption threadOption, bool keepSubscriberReferenceAlive, Predicate<TPayLoad> filter)
         {
-            IDelegateReference actionReference = new DelegateReference(action, keepSubscriberReferenceAlive);
+            IDelegateReference funcReference = new DelegateReference(func, keepSubscriberReferenceAlive);
             IDelegateReference filterReference = filter != null
                 ? new DelegateReference(filter, keepSubscriberReferenceAlive)
                 : new DelegateReference(new Predicate<TPayLoad>(x => true), true);
@@ -203,10 +210,10 @@ namespace WPFLibrary.EventSystem.Events
 
             AsyncEventSubscriptionBase<TPayLoad> subscription = threadOption switch
             {
-                ThreadOption.PublisherThread => new AsyncPublisherEventSubscription<TPayLoad>(actionReference, filterReference),
-                ThreadOption.BackgroundThread => new AsyncBackgroundEventSubscription<TPayLoad>(actionReference, filterReference),
-                ThreadOption.UIThread => new AsyncDispatcherEventSubscription<TPayLoad>(actionReference, filterReference, SynchronizationContext),
-                _ => new AsyncPublisherEventSubscription<TPayLoad>(actionReference, filterReference),
+                ThreadOption.PublisherThread => new AsyncPublisherEventSubscription<TPayLoad>(funcReference, filterReference),
+                ThreadOption.BackgroundThread => new AsyncBackgroundEventSubscription<TPayLoad>(funcReference, filterReference),
+                ThreadOption.UIThread => new AsyncDispatcherEventSubscription<TPayLoad>(funcReference, filterReference, SynchronizationContext),
+                _ => new AsyncPublisherEventSubscription<TPayLoad>(funcReference, filterReference),
             };
             return InternalSubscribe(subscription);
         }
@@ -215,9 +222,9 @@ namespace WPFLibrary.EventSystem.Events
         /// Publishes the <see cref="PubSubEvent{TPayLoad}"/>.
         /// </summary>
         /// <param name="payload">Message to pass to the subscribers.</param>
-        public virtual Task PublishAsync(TPayLoad payload)
+        public virtual Task PublishAsync(TPayLoad payLoad, CancellationToken cancellationToken = default)
         {
-            return InternalPublish(payload);
+            return InternalPublish(payLoad, cancellationToken);
         }
 
         /// <summary>
@@ -260,7 +267,7 @@ namespace WPFLibrary.EventSystem.Events
         /// </summary>
         /// <param name="subscriber">The <see cref="Action{TPayLoad}"/> used when subscribing to the event.</param>
         /// <returns><see langword="true"/> if there is an <see cref="Action{TPayLoad}"/> that matches; otherwise <see langword="false"/>.</returns>
-        public virtual bool Contains(Func<TPayLoad, Task> subscriber)
+        public virtual bool Contains(Func<TPayLoad, CancellationToken, Task> subscriber)
         {
             IEventSubscription eventSubscription;
             lock (Subscriptions)

@@ -23,7 +23,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// Invokes the specified <see cref="System.Action"/> in an asynchronous thread by using a <see cref="Task"/>.
         /// </summary>
         /// <param name="action">The action to execute.</param>
-        public override void InvokeAction(Action action)
+        public override void InvokeDelegate(Action action)
         {
             Task.Run(action);
         }

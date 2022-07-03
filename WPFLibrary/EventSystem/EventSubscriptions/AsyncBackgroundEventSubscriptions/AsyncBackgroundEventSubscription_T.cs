@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 
@@ -23,9 +24,9 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// </summary>
         /// <param name="action">The action to execute.</param>
         /// <param name="argument">The arguments for the action to execute.</param>
-        public override Task InvokeAction(Func<TPayLoad, Task> action, TPayLoad argument)
+        public override Task InvokeDelegate(Func<TPayLoad, CancellationToken, Task> action, TPayLoad argument, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => action(argument));
+            return Task.Run(() => action(argument, cancellationToken), cancellationToken);
         }
     }
 }

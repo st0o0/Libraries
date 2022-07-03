@@ -33,7 +33,7 @@ namespace WPFLibrary.EventSystem.Events.Bases
         /// </remarks>
         protected virtual SubscriptionToken InternalSubscribe(IEventSubscription eventSubscription)
         {
-            if (eventSubscription == null) throw new ArgumentNullException(nameof(eventSubscription));
+            ArgumentNullException.ThrowIfNull(eventSubscription, nameof(eventSubscription));
 
             eventSubscription.SubscriptionToken = new SubscriptionToken(Unsubscribe);
 
@@ -51,12 +51,9 @@ namespace WPFLibrary.EventSystem.Events.Bases
         /// <remarks>Before executing the strategies, this class will prune all the subscribers from the
         /// list that return a <see langword="null" /> <see cref="Action{T}"/> when calling the
         /// <see cref="IEventSubscription.GetExecutionStrategy"/> method.</remarks>
-        protected async Task InternalPublish(params object[] arguments)
+        protected Task InternalPublish(object args = null, CancellationToken cancellationToken = default)
         {
-            foreach (Func<object[], Task> executionStrategy in PruneAndReturnStrategies())
-            {
-                await executionStrategy(arguments);
-            }
+            return Task.WhenAll(PruneAndReturnStrategies().Select(func => func?.Invoke(args, cancellationToken)));
         }
 
         /// <summary>
@@ -89,15 +86,15 @@ namespace WPFLibrary.EventSystem.Events.Bases
             }
         }
 
-        private List<Func<object[], Task>> PruneAndReturnStrategies()
+        private List<Func<object, CancellationToken, Task>> PruneAndReturnStrategies()
         {
-            List<Func<object[], Task>> result = new();
+            List<Func<object, CancellationToken, Task>> result = new();
 
             lock (Subscriptions)
             {
                 for (int i = Subscriptions.Count - 1; i >= 0; i--)
                 {
-                    Func<object[], Task> listItem = subscriptions[i].GetExecutionStrategy();
+                    Func<object, CancellationToken, Task> listItem = subscriptions[i].GetExecutionStrategy();
 
                     if (listItem == null)
                     {

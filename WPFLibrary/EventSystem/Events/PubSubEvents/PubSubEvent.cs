@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.Enums;
 using WPFLibrary.EventSystem.Events.Bases;
@@ -34,7 +35,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <remarks>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<Task> action)
+        public SubscriptionToken Subscribe(Func<CancellationToken, Task> action)
         {
             return Subscribe(action, ThreadOption.PublisherThread);
         }
@@ -64,7 +65,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <remarks>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<Task> action, ThreadOption threadOption)
+        public SubscriptionToken Subscribe(Func<CancellationToken, Task> action, ThreadOption threadOption)
         {
             return Subscribe(action, threadOption, false);
         }
@@ -98,7 +99,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <para/>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public SubscriptionToken Subscribe(Func<Task> action, bool keepSubscriberReferenceAlive)
+        public SubscriptionToken Subscribe(Func<CancellationToken, Task> action, bool keepSubscriberReferenceAlive)
         {
             return Subscribe(action, ThreadOption.PublisherThread, keepSubscriberReferenceAlive);
         }
@@ -149,7 +150,7 @@ namespace WPFLibrary.EventSystem.Events
         /// <para/>
         /// The PubSubEvent collection is thread-safe.
         /// </remarks>
-        public virtual SubscriptionToken Subscribe(Func<Task> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive)
+        public virtual SubscriptionToken Subscribe(Func<CancellationToken, Task> action, ThreadOption threadOption, bool keepSubscriberReferenceAlive)
         {
             IDelegateReference actionReference = new DelegateReference(action, keepSubscriberReferenceAlive);
 

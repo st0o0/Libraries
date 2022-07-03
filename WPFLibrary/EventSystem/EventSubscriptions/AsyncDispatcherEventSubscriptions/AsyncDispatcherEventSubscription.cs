@@ -29,12 +29,12 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// Invokes the specified <see cref="Func{Task}"/> asynchronously in the specified <see cref="SynchronizationContext"/>.
         /// </summary>
         /// <param name="action">The action to execute.</param>
-        public override Task InvokeAction(Func<Task> action)
+        public override Task InvokeDelegate(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default)
         {
             TaskCompletionSource<bool> tcs = new();
             syncContext.Post(async (args) =>
             {
-                await action();
+                await action(cancellationToken);
                 tcs.SetResult(true);
             }, null);
             return tcs.Task;

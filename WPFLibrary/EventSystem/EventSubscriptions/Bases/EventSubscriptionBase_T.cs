@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 using WPFLibrary.EventSystem.SubscriptionTokens;
@@ -27,18 +28,12 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         ///or the target of <paramref name="filterReference"/> is not of type <see cref="Predicate{TPayLoad}"/>.</exception>
         public EventSubscriptionBase(IDelegateReference actionReference, IDelegateReference filterReference)
         {
-            if (actionReference == null)
-            {
-                throw new ArgumentNullException(nameof(actionReference));
-            }
+            ArgumentNullException.ThrowIfNull(actionReference, nameof(actionReference));
+            ArgumentNullException.ThrowIfNull(filterReference, nameof(filterReference));
+
             if (actionReference.Target is not Action<TPayLoad>)
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "InvalidDelegateRerefenceTypeException", typeof(Action<TPayLoad>).FullName), nameof(actionReference));
-            }
-
-            if (filterReference == null)
-            {
-                throw new ArgumentNullException(nameof(filterReference));
             }
             if (filterReference.Target is not Predicate<TPayLoad>)
             {
@@ -82,24 +77,25 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <see cref="Delegate">delegates</see>. As long as the returned delegate is not garbage collected,
         /// the <see cref="Action"/> and <see cref="Filter"/> references delegates won't get collected either.
         /// </remarks>
-        public virtual Func<object[], Task> GetExecutionStrategy()
+        public virtual Func<object, CancellationToken, Task> GetExecutionStrategy()
         {
             Action<TPayLoad> action = this.Action;
             Predicate<TPayLoad> filter = this.Filter;
             if (action != null && filter != null)
             {
-                return arguments =>
+                return (arg, ct) =>
                 {
-                    TPayLoad argument = default;
-                    if (arguments != null && arguments.Length > 0 && arguments[0] != null)
+                    TPayLoad param = default;
+                    if (arg is TPayLoad pay)
                     {
-                        argument = (TPayLoad)arguments[0];
+                        param = pay;
                     }
-                    if (filter(argument))
+                    if (filter(param))
                     {
-                        InvokeAction(action, argument);
+                        InvokeDelegate(action, param);
                     }
-                    return AsyncHelpers.Return();
+                    ct.ThrowIfCancellationRequested();
+                    return Task.FromResult(false);
                 };
             }
             return null;
@@ -111,12 +107,9 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="action">The action to execute.</param>
         /// <param name="argument">The payload to pass <paramref name="action"/> while invoking it.</param>
         /// <exception cref="ArgumentNullException">An <see cref="ArgumentNullException"/> is thrown if <paramref name="action"/> is null.</exception>
-        public virtual void InvokeAction(Action<TPayLoad> action, TPayLoad argument)
+        public virtual void InvokeDelegate(Action<TPayLoad> action, TPayLoad argument)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            ArgumentNullException.ThrowIfNull(actionReference, nameof(action));
 
             action(argument);
         }

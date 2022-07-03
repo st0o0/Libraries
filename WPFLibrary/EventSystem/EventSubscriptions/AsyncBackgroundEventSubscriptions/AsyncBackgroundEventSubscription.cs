@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 
@@ -24,9 +25,9 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// Invokes the specified <see cref="Task"/> in an asynchronous thread by using a <see cref="Task"/>.
         /// </summary>
         /// <param name="action">The action to execute.</param>
-        public override Task InvokeAction(Func<Task> action)
+        public override Task InvokeDelegate(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default)
         {
-            return Task.Run(action);
+            return Task.Run(() => action(cancellationToken), cancellationToken);
         }
     }
 }
