@@ -1,5 +1,4 @@
-﻿using EFCore.BulkExtensions;
-using JSLibrary.Logics.Business.Interfaces;
+﻿using JSLibrary.Logics.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
