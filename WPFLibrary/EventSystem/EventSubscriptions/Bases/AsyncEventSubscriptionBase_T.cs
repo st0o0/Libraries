@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 using WPFLibrary.EventSystem.SubscriptionTokens;
-using WPFLibrary.Helpers;
 
 namespace WPFLibrary.EventSystem.EventSubscriptions
 {
@@ -114,7 +113,10 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <exception cref="ArgumentNullException">An <see cref="ArgumentNullException"/> is thrown if <paramref name="action"/> is null.</exception>
         public virtual Task InvokeDelegate(Func<TPayLoad, CancellationToken, Task> action, TPayLoad argument, CancellationToken cancellationToken = default)
         {
-            return action == null ? throw new ArgumentNullException(nameof(action)) : action(argument, cancellationToken);
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+            ArgumentNullException.ThrowIfNull(argument, nameof(argument));
+
+            return action.Invoke(argument, cancellationToken);
         }
     }
 }

@@ -25,7 +25,9 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="action">The action to execute.</param>
         public override void InvokeDelegate(Action action)
         {
-            Task.Run(action);
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+
+            action.Invoke();
         }
     }
 }

@@ -34,6 +34,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpClientBuilder AddAuthentication(this IHttpClientBuilder builder, IClientCredentials credentials, string identityAuthority, string tokenEndpoint)
         {
+            ArgumentNullException.ThrowIfNull(credentials, nameof(credentials));
+            ArgumentNullException.ThrowIfNull(identityAuthority, nameof(identityAuthority));
+            ArgumentNullException.ThrowIfNull(tokenEndpoint, nameof(tokenEndpoint));
+
             builder.Services.TryAddSingleton<IAccessTokenCacheManager, AccessTokenCacheManager>();
             builder.AddHttpMessageHandler(provider => CreateDelegatingHandler(provider, credentials, identityAuthority, tokenEndpoint));
 

@@ -30,10 +30,12 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="argument">The payload to pass <paramref name="action"/> while invoking it.</param>
         public override Task InvokeDelegate(Func<TPayLoad, CancellationToken, Task> action, TPayLoad argument, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+
             TaskCompletionSource<bool> tcs = new();
             syncContext.Post(async (args) =>
             {
-                await action((TPayLoad)args, cancellationToken);
+                await action.Invoke((TPayLoad)args, cancellationToken);
                 tcs.SetResult(true);
             }, argument);
             return tcs.Task;

@@ -3,7 +3,6 @@ using JSLibrary.TPL;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,10 +15,6 @@ namespace JSLibrary.Extensions
         public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<int> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
 
             return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.GetAsync(item, cancellationToken), cancellationToken);
         }
@@ -27,10 +22,6 @@ namespace JSLibrary.Extensions
         public static async Task<IEnumerable<ModelType>> PostManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
 
             return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.PostAsync(item, cancellationToken), cancellationToken);
         }
@@ -38,10 +29,6 @@ namespace JSLibrary.Extensions
         public static async Task<IEnumerable<ModelType>> PutManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
 
             return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.PutAsync(item, cancellationToken), cancellationToken);
         }
@@ -49,10 +36,6 @@ namespace JSLibrary.Extensions
         public static async Task DeleteManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
 
             await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.DeleteAsync(item, cancellationToken), cancellationToken);
         }
@@ -60,10 +43,6 @@ namespace JSLibrary.Extensions
         public static async Task DownloadManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<(ModelType model, Stream stream)> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
-            if (!items.Any())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
 
             await ParallelTask.TaskManyAsync(items, async tuple => await apiLogicBase.DownloadAsync(tuple.model, tuple.stream, cancellationToken), cancellationToken);
         }
@@ -72,9 +51,10 @@ namespace JSLibrary.Extensions
         public static async Task<Stream> DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
+
             if (model.Id == 0)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentException(null, nameof(model));
             }
 
             HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -85,9 +65,10 @@ namespace JSLibrary.Extensions
         public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
+
             if (model.Id == 0)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentException(null, nameof(model));
             }
 
             HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -99,9 +80,10 @@ namespace JSLibrary.Extensions
         public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
+
             if (model.Id == 0)
             {
-                throw new ArgumentNullException(nameof(model));
+                throw new ArgumentException(null, nameof(model));
             }
 
             HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);

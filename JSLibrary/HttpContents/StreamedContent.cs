@@ -16,6 +16,10 @@ namespace JSLibrary.HttpContents
 
         public StreamedContent(Stream stream, IProgress<double> progress, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(stream, nameof(stream));
+            ArgumentNullException.ThrowIfNull(progress, nameof(progress));
+            ArgumentNullException.ThrowIfNull(cancellationToken, nameof(cancellationToken));
+
             _stream = stream;
             _progress = progress;
             _cancellationToken = cancellationToken;

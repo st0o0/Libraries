@@ -16,8 +16,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="actionReference">A reference to a delegate of type <see cref="System.Action"/>.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="actionReference"/> or <see paramref="filterReference"/> are <see langword="null" />.</exception>
         /// <exception cref="ArgumentException">When the target of <paramref name="actionReference"/> is not of type <see cref="System.Action"/>.</exception>
-        public AsyncBackgroundEventSubscription(IDelegateReference actionReference)
-            : base(actionReference)
+        public AsyncBackgroundEventSubscription(IDelegateReference actionReference) : base(actionReference)
         {
         }
 

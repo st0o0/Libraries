@@ -23,6 +23,8 @@ namespace JSLibrary.FileCaches
 
         public async Task DownloadAsync(ModelType model, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+
             string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
             Directory.CreateDirectory(Path.GetDirectoryName(filepath));
             await this.DownloadAsync(model, filepath, cancellationToken);
@@ -30,6 +32,9 @@ namespace JSLibrary.FileCaches
 
         public async Task DownloadAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+            ArgumentNullException.ThrowIfNull(progress, nameof(progress));
+
             string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
             Directory.CreateDirectory(Path.GetDirectoryName(filepath));
             await this.DownloadAsync(model, filepath, progress, cancellationToken);
@@ -37,6 +42,8 @@ namespace JSLibrary.FileCaches
 
         public async Task<string> GetFilePathAsync(ModelType model, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+
             string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
             Directory.CreateDirectory(Path.GetDirectoryName(filepath));
             await this.DownloadAsync(model, filepath, cancellationToken);
@@ -45,6 +52,9 @@ namespace JSLibrary.FileCaches
 
         public async Task<string> GetFilePathAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+            ArgumentNullException.ThrowIfNull(progress, nameof(progress));
+
             string filepath = Path.Combine(GetCachePath(), model.FilePath, model.FileName);
             Directory.CreateDirectory(Path.GetDirectoryName(filepath));
             await this.DownloadAsync(model, filepath, progress, cancellationToken);
@@ -53,12 +63,17 @@ namespace JSLibrary.FileCaches
 
         public async Task<FileStream> GetFileStreamAsync(ModelType model, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+
             string filepath = await this.GetFilePathAsync(model, cancellationToken);
             return new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
         public async Task<FileStream> GetFileStreamAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+            ArgumentNullException.ThrowIfNull(progress, nameof(progress));
+
             string filepath = await this.GetFilePathAsync(model, progress, cancellationToken);
             return new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }

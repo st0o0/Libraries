@@ -24,6 +24,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         ///or the target of <paramref name="filterReference"/> is not of type <see cref="Predicate{TPayLoad}"/>.</exception>
         public DispatcherEventSubscription(IDelegateReference actionReference, IDelegateReference filterReference, SynchronizationContext context) : base(actionReference, filterReference)
         {
+            ArgumentNullException.ThrowIfNull(context, nameof(context));
             syncContext = context;
         }
 
@@ -34,6 +35,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="argument">The payload to pass <paramref name="action"/> while invoking it.</param>
         public override void InvokeDelegate(Action<TPayLoad> action, TPayLoad argument)
         {
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
             syncContext.Post((o) => action((TPayLoad)o), argument);
         }
     }

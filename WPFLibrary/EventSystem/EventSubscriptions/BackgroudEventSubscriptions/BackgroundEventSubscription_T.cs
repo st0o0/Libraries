@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 
 namespace WPFLibrary.EventSystem.EventSubscriptions
@@ -30,8 +28,9 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="argument">The payload to pass <paramref name="action"/> while invoking it.</param>
         public override void InvokeDelegate(Action<TPayLoad> action, TPayLoad argument)
         {
-            //ThreadPool.QueueUserWorkItem( (o) => action(argument) );
-            Task.Run(() => action(argument));
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+
+            action.Invoke(argument);
         }
     }
 }

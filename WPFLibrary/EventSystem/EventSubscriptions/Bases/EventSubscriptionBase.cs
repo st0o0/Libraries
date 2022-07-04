@@ -84,7 +84,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         {
             ArgumentNullException.ThrowIfNull(action, nameof(action));
 
-            action();
+            action.Invoke();
         }
     }
 }

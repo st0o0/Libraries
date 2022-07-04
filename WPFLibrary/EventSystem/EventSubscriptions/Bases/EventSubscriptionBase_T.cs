@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using WPFLibrary.EventSystem.References;
 using WPFLibrary.EventSystem.SubscriptionTokens;
-using WPFLibrary.Helpers;
 
 namespace WPFLibrary.EventSystem.EventSubscriptions
 {
@@ -111,7 +110,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         {
             ArgumentNullException.ThrowIfNull(actionReference, nameof(action));
 
-            action(argument);
+            action.Invoke(argument);
         }
     }
 }

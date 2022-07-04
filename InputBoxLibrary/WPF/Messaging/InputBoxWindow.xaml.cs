@@ -71,6 +71,8 @@ namespace InputBoxLibrary.WPF.Messaging
 
         private void AddbuttonToUniformGrid(List<Button> buttons, string gridName)
         {
+            ArgumentNullException.ThrowIfNull(gridName, nameof(gridName));
+
             foreach (var i in buttons)
             {
                 UniformGrid.Children.Add(i);
@@ -117,7 +119,7 @@ namespace InputBoxLibrary.WPF.Messaging
 
         private Button CreateButton(ButtonInfo buttonInfo)
         {
-            Button button = new Button()
+            Button button = new()
             {
                 Content = buttonInfo.ButtonName
             };

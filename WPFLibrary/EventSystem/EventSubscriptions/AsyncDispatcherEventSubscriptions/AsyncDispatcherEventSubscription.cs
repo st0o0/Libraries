@@ -31,6 +31,8 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="action">The action to execute.</param>
         public override Task InvokeDelegate(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+
             TaskCompletionSource<bool> tcs = new();
             syncContext.Post(async (args) =>
             {

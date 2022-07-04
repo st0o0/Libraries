@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using WPFLibrary.EventSystem.Enums;
 using WPFLibrary.EventSystem.Events.Bases;
 using WPFLibrary.EventSystem.EventSubscriptions;
 using WPFLibrary.EventSystem.References;

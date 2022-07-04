@@ -48,7 +48,7 @@ namespace JSLibrary.Logics.Api
         public virtual async Task<ModelType> PostAsync(ModelType model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
-            if (model.Id != 0)
+            if (model.Id == 0)
             {
                 throw new ArgumentNullException(nameof(model));
             }

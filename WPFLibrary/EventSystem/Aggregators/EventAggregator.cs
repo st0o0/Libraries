@@ -34,7 +34,7 @@ namespace WPFLibrary.EventSystem.Aggregators
                     {
                         SynchronizationContext = syncContext
                     };
-                    events.TryAdd(typeof(TEventType), newEvent);
+                    events.Add(typeof(TEventType), newEvent);
                     return newEvent;
                 }
             }

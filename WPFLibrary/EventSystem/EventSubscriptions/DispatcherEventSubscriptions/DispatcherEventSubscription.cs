@@ -21,6 +21,7 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         ///<exception cref="ArgumentException">When the target of <paramref name="actionReference"/> is not of type <see cref="System.Action{TPayload}"/>.</exception>
         public DispatcherEventSubscription(IDelegateReference actionReference, SynchronizationContext context) : base(actionReference)
         {
+            ArgumentNullException.ThrowIfNull(context, nameof(context));
             syncContext = context;
         }
 
@@ -30,7 +31,9 @@ namespace WPFLibrary.EventSystem.EventSubscriptions
         /// <param name="action">The action to execute.</param>
         public override void InvokeDelegate(Action action)
         {
-            syncContext.Post((o) => action(), null);
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+
+            syncContext.Post((o) => action.Invoke(), null);
         }
     }
 }

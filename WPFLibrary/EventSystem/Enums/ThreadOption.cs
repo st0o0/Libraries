@@ -1,4 +1,4 @@
-﻿namespace WPFLibrary.EventSystem.Enums
+﻿namespace WPFLibrary.EventSystem
 {
     /// <summary>
     /// Specifies on which thread a <see cref="PubSubEvent{TPayLoad}"/> subscriber will be called.
