@@ -1,9 +1,10 @@
 ﻿namespace WPFLibrary.Input
 {
-    public enum CastTypes
+    public enum CastType
     {
         Auto,
         HardCast,
-        SoftCast
+        SoftCast,
+        Enum
     }
 }

@@ -17,14 +17,14 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The expression to invoke when <see cref="CanExecute(T)"/> is used.
         /// </summary>
-        private readonly Expression<Func<T, bool>> canExecute;
+        private readonly Func<T, bool> canExecute;
 
         /// <summary>
         /// The <see cref="Action"/> to invoke when <see cref="Execute(T)"/> is used.
         /// </summary>
         private readonly Action<T> execute;
 
-        private readonly CastTypes castTypes;
+        private readonly CastType castType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RelayCommand{T}"/> class that can always execute.
@@ -35,11 +35,8 @@ namespace WPFLibrary.Input
         /// nullable <see cref="object"/> parameter, it is recommended that if <typeparamref name="T"/> is a reference type,
         /// you should always declare it as nullable, and to always perform checks within <paramref name="execute"/>.
         /// </remarks>
-        public RelayCommand(Action<T> action, CastTypes castTypes = CastTypes.Auto)
+        public RelayCommand(Action<T> execute, bool canExcute = true, CastType castType = CastType.Auto) : this(execute, param => canExcute, castType)
         {
-            this.execute = action;
-            this.canExecute = param => true;
-            this.castTypes = castTypes == CastTypes.Auto ? typeof(T).IsPrimitive ? CastTypes.HardCast : CastTypes.SoftCast : castTypes;
         }
 
         /// <summary>
@@ -48,11 +45,11 @@ namespace WPFLibrary.Input
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public RelayCommand(Action<T> action, Expression<Func<T, bool>> expression, CastTypes castTypes = CastTypes.Auto)
+        public RelayCommand(Action<T> execute, Func<T, bool> canExecute, CastType castType = CastType.Auto)
         {
-            this.execute = action;
-            this.canExecute = expression;
-            this.castTypes = castTypes == CastTypes.Auto ? typeof(T).IsPrimitive ? CastTypes.HardCast : CastTypes.SoftCast : castTypes;
+            this.execute = execute;
+            this.canExecute = canExecute;
+            this.castType = castType == CastType.Auto ? typeof(T).IsEnum ? CastType.Enum : typeof(T).IsPrimitive ? CastType.HardCast : CastType.SoftCast : castType;
         }
 
         /// <inheritdoc/>
@@ -71,29 +68,36 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public bool CanExecute(T parameter)
         {
-            return canExecute.Compile().Invoke(parameter);
+            return canExecute.Invoke(parameter);
         }
 
         /// <inheritdoc/>
         public bool CanExecute(object parameter)
         {
-            if (castTypes is CastTypes.SoftCast)
+            if (castType is CastType.SoftCast)
             {
                 if (parameter is T value)
                 {
                     return CanExecute(value);
                 }
             }
-            else if (castTypes is CastTypes.HardCast)
+            else if (castType is CastType.HardCast)
             {
                 if (parameter is null)
                 {
                     if (!typeof(T).IsNullable())
                     {
-                        return CanExecute(default);
+                        return CanExecute(default(T));
                     }
                 }
                 return CanExecute((T)parameter);
+            }
+            else if (castType is CastType.Enum)
+            {
+                if (!(parameter is null))
+                {
+                    return CanExecute((T)Enum.ToObject(typeof(T), parameter));
+                }
             }
             return false;
         }
@@ -107,7 +111,7 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public void Execute(object parameter)
         {
-            if (castTypes is CastTypes.SoftCast)
+            if (castType is CastType.SoftCast)
             {
                 if (parameter is T value)
                 {
@@ -115,17 +119,24 @@ namespace WPFLibrary.Input
                 }
                 return;
             }
-            else if (castTypes is CastTypes.HardCast)
+            else if (castType is CastType.HardCast)
             {
                 if (parameter is null)
                 {
                     if (!typeof(T).IsNullable())
                     {
-                        Execute(default);
+                        Execute(default(T));
                         return;
                     }
                 }
                 Execute((T)parameter);
+            }
+            else if (castType is CastType.Enum)
+            {
+                if (!(parameter is null))
+                {
+                    Execute((T)Enum.ToObject(typeof(T), parameter));
+                }
             }
             return;
         }

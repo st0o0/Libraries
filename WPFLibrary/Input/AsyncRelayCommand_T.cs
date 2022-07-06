@@ -18,17 +18,17 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="CanBeCanceled"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new(nameof(CanBeCanceled));
+        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new PropertyChangedEventArgs(nameof(CanBeCanceled));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsCancellationRequested"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new(nameof(IsCancellationRequested));
+        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new PropertyChangedEventArgs(nameof(IsCancellationRequested));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsRunning"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new(nameof(IsRunning));
+        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new PropertyChangedEventArgs(nameof(IsRunning));
 
         /// <summary>
         /// The <see cref="Func{TResult}"/> to invoke when <see cref="Execute(T)"/> is used.
@@ -43,11 +43,11 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The optional action to invoke when <see cref="CanExecute(T)"/> is used.
         /// </summary>
-        private readonly Expression<Func<T, bool>> canExecute;
+        private readonly Func<T, bool> canExecute;
 
-        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
-        private readonly CastTypes castTypes;
+        private readonly CastType castType;
 
         private CancellationTokenSource cancellationTokenSource;
 
@@ -65,24 +65,8 @@ namespace WPFLibrary.Input
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T, Task> execute, CastTypes castTypes = CastTypes.SoftCast)
+        public AsyncRelayCommand(Func<T, Task> execute, bool canExecute = true, CastType castType = CastType.Auto) : this(execute, param => canExecute, castType)
         {
-            this.execute = execute;
-            this.canExecute = param => true;
-            this.castTypes = castTypes;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class that can always execute.
-        /// </summary>
-        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
-        /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, CastTypes castTypes = CastTypes.SoftCast)
-        {
-            this.cancellationTokenSource = new CancellationTokenSource();
-            this.cancelableExecute = cancelableExecute;
-            this.canExecute = param => true;
-            this.castTypes = castTypes;
         }
 
         /// <summary>
@@ -91,25 +75,31 @@ namespace WPFLibrary.Input
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T, Task> execute, Expression<Func<T, bool>> canExecute, CastTypes castTypes = CastTypes.SoftCast)
+        public AsyncRelayCommand(Func<T, Task> execute, Func<T, bool> canExecute, CastType castType = CastType.Auto) : this((param, ct) => execute(param), canExecute, castType)
         {
-            this.execute = execute;
-            this.canExecute = canExecute;
-            this.castTypes = castTypes;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class that can always execute.
+        /// </summary>
+        /// <param name="cancelableExecute">The cancelable execution logic.</param>
+        /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
+        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, bool canExecute = true, CastType castType = CastType.Auto) : this(cancelableExecute, param => canExecute, castType)
+        {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class.
         /// </summary>
-        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
+        /// <param name="cancelableExecute">The cancelable execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
-        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, Expression<Func<T, bool>> canExecute, CastTypes castTypes = CastTypes.SoftCast)
+        public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, Func<T, bool> canExecute, CastType castType = CastType.Auto)
         {
             this.cancellationTokenSource = new CancellationTokenSource();
             this.cancelableExecute = cancelableExecute;
             this.canExecute = canExecute;
-            this.castTypes = castTypes;
+            this.castType = castType == CastType.Auto ? typeof(T).IsEnum ? CastType.Enum : typeof(T).IsPrimitive ? CastType.HardCast : CastType.SoftCast : castType;
         }
 
         /// <inheritdoc/>
@@ -130,33 +120,40 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public bool CanExecute(T parameter)
         {
-            return this.canExecute.Compile().Invoke(parameter) != false;
+            if (this.semaphoreSlim.CurrentCount == 0)
+            {
+                return false;
+            }
+            return this.canExecute.Invoke(parameter) != false;
         }
 
         /// <inheritdoc/>
         public bool CanExecute(object parameter)
         {
-            if (this.semaphoreSlim.CurrentCount == 0)
-            {
-                return false;
-            }
-            if (castTypes is CastTypes.SoftCast)
+            if (castType is CastType.SoftCast)
             {
                 if (parameter is T value)
                 {
                     return CanExecute(value);
                 }
             }
-            else if (castTypes is CastTypes.HardCast)
+            else if (castType is CastType.HardCast)
             {
                 if (parameter is null)
                 {
                     if (!typeof(T).IsNullable())
                     {
-                        return CanExecute(default);
+                        return CanExecute(default(T));
                     }
                 }
                 return CanExecute((T)parameter);
+            }
+            else if (castType is CastType.Enum)
+            {
+                if (parameter is not null)
+                {
+                    return CanExecute((T)Enum.ToObject(typeof(T), parameter));
+                }
             }
             return false;
         }
@@ -164,7 +161,7 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public void Execute(object parameter)
         {
-            if (castTypes is CastTypes.SoftCast)
+            if (castType is CastType.SoftCast)
             {
                 if (parameter is T value)
                 {
@@ -172,17 +169,24 @@ namespace WPFLibrary.Input
                 }
                 return;
             }
-            else if (castTypes is CastTypes.HardCast)
+            else if (castType is CastType.HardCast)
             {
                 if (parameter is null)
                 {
                     if (!typeof(T).IsNullable())
                     {
-                        Execute(default);
+                        Execute(default(T));
                         return;
                     }
                 }
                 Execute((T)parameter);
+            }
+            else if (castType is CastType.Enum)
+            {
+                if (parameter is not null)
+                {
+                    Execute((T)Enum.ToObject(typeof(T), parameter));
+                }
             }
             return;
         }
