@@ -18,17 +18,17 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="CanBeCanceled"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new PropertyChangedEventArgs(nameof(CanBeCanceled));
+        private static readonly PropertyChangedEventArgs CanBeCanceledChangedEventArgs = new(nameof(CanBeCanceled));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsCancellationRequested"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new PropertyChangedEventArgs(nameof(IsCancellationRequested));
+        private static readonly PropertyChangedEventArgs IsCancellationRequestedChangedEventArgs = new(nameof(IsCancellationRequested));
 
         /// <summary>
         /// The cached <see cref="PropertyChangedEventArgs"/> for <see cref="IsRunning"/>.
         /// </summary>
-        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new PropertyChangedEventArgs(nameof(IsRunning));
+        private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new(nameof(IsRunning));
 
         /// <summary>
         /// The <see cref="Func{TResult}"/> to invoke when <see cref="Execute(T)"/> is used.
@@ -45,20 +45,13 @@ namespace WPFLibrary.Input
         /// </summary>
         private readonly Func<T, bool> canExecute;
 
-        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
         private readonly CastType castType;
 
         private CancellationTokenSource cancellationTokenSource;
 
         private Task ExecuteTask;
-
-        /// <inheritdoc/>
-        public event EventHandler CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested += value;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class that can always execute.
@@ -100,6 +93,13 @@ namespace WPFLibrary.Input
             this.cancelableExecute = cancelableExecute;
             this.canExecute = canExecute;
             this.castType = castType == CastType.Auto ? typeof(T).IsEnum ? CastType.Enum : typeof(T).IsPrimitive ? CastType.HardCast : CastType.SoftCast : castType;
+        }
+
+        /// <inheritdoc/>
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested += value;
         }
 
         /// <inheritdoc/>

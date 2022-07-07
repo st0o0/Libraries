@@ -53,13 +53,6 @@ namespace WPFLibrary.Input
 
         private Task ExecuteTask;
 
-        /// <inheritdoc/>
-        public event EventHandler CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncRelayCommand"/> class that can always execute.
         /// </summary>
@@ -102,6 +95,13 @@ namespace WPFLibrary.Input
             this.cancellationTokenSource = new CancellationTokenSource();
             this.cancelableExecute = cancelableExecute;
             this.canExecute = canExecute;
+        }
+
+        /// <inheritdoc/>
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         /// <inheritdoc/>
