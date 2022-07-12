@@ -11,6 +11,7 @@ namespace JSLibrary.Extensions
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
             ArgumentNullException.ThrowIfNull(destination, nameof(destination));
+            ArgumentNullException.ThrowIfNull(progress, nameof(progress));
 
             if (!source.CanRead)
             {

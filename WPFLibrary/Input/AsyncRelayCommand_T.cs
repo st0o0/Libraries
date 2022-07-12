@@ -109,7 +109,7 @@ namespace WPFLibrary.Input
         public bool IsCancellationRequested => this.cancellationTokenSource?.IsCancellationRequested == true;
 
         /// <inheritdoc/>
-        public bool IsRunning => this.ExecuteTask.IsCompleted == false;
+        public bool IsRunning => this.ExecuteTask?.IsCompleted == false;
 
         /// <inheritdoc/>
         public void NotifyCanExecuteChanged()

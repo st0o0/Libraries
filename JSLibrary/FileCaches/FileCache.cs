@@ -87,7 +87,7 @@ namespace JSLibrary.FileCaches
 
             Directory
             .GetDirectories(GetCachePath(), "", SearchOption.AllDirectories)
-            .SelectMany(x => Directory.GetFiles(x))
+            .SelectMany(s => Directory.GetFiles(s))
             .Where(s => File.GetLastAccessTimeUtc(s) < DateTime.UtcNow.Subtract(timeSpan))
             .ToList()
             .ForEach(s => File.Delete(s));

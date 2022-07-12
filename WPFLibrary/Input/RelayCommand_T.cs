@@ -94,7 +94,7 @@ namespace WPFLibrary.Input
             }
             else if (castType is CastType.Enum)
             {
-                if (!(parameter is null))
+                if (parameter is not null)
                 {
                     return CanExecute((T)Enum.ToObject(typeof(T), parameter));
                 }
@@ -133,7 +133,7 @@ namespace WPFLibrary.Input
             }
             else if (castType is CastType.Enum)
             {
-                if (!(parameter is null))
+                if (parameter is not null)
                 {
                     Execute((T)Enum.ToObject(typeof(T), parameter));
                 }

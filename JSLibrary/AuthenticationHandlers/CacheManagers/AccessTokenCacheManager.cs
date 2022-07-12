@@ -12,8 +12,7 @@ namespace JSLibrary.AuthenticationHandlers.CacheManagers
         public void AddOrUpdateToken(string clientId, ITokenResponse accessToken)
         {
             AccessTokenCacheEntry newToken = new(accessToken);
-            this.cache.TryRemove(clientId, out _);
-            this.cache.TryAdd(clientId, newToken);
+            this.cache.AddOrUpdate(clientId, newToken, (s, oldToken) => newToken);
         }
 
         public void Clear()
