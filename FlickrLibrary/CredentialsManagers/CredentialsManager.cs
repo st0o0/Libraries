@@ -19,7 +19,7 @@ namespace FlickrLibrary.CredentialsManagers
 
         private OAuthAccessToken DecodingData(byte[] bytes)
         {
-            string[] items = Encoding.UTF8.GetString(bytes).Split("//", StringSplitOptions.TrimEntries);
+            string[] items = AESHelper.Decrypt(Encoding.UTF8.GetString(bytes)).Split("//");
             return new OAuthAccessToken()
             {
                 Token = items[0],
@@ -33,8 +33,45 @@ namespace FlickrLibrary.CredentialsManagers
         private string EncodingData(OAuthAccessToken accessToken)
         {
             StringBuilder sb = new StringBuilder().AppendJoin("//", new[] { accessToken.Token, accessToken.TokenSecret, accessToken.FullName, accessToken.UserId, accessToken.Username });
-            byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
-            return Convert.ToBase64String(bytes);
+            return AESHelper.Encrypt(sb.ToString());
+        }
+
+        private sealed class AESHelper
+        {
+            private static readonly byte[] _aesIV256 = Encoding.UTF8.GetBytes(@"!QAZ2WSX#EDC4RFV");
+
+            private static readonly byte[] _aesKey256 = Encoding.UTF8.GetBytes(@"5TGB&YHN7UJM(IK<5TGB&YHN7UJM(IK<");
+
+            public static string Encrypt(string plainText)
+            {
+                using Aes aes = Aes.Create();
+                aes.KeySize = 256;
+                aes.BlockSize = 128;
+                aes.IV = _aesIV256;
+                aes.Key = _aesKey256;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.PKCS7;
+                using MemoryStream ms = new();
+                using CryptoStream cs = new(ms, aes.CreateEncryptor(), CryptoStreamMode.Write);
+                using StreamWriter sw = new(cs);
+                sw.Write(plainText);
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
+
+            public static string Decrypt(string text)
+            {
+                using Aes aes = Aes.Create();
+                aes.KeySize = 256;
+                aes.BlockSize = 128;
+                aes.IV = _aesIV256;
+                aes.Key = _aesKey256;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.PKCS7;
+                using MemoryStream ms = new(Encoding.UTF8.GetBytes(text));
+                using CryptoStream cs = new(ms, aes.CreateDecryptor(), CryptoStreamMode.Write);
+                using StreamReader sr = new(cs);
+                return sr.ReadToEnd();
+            }
         }
     }
 }
