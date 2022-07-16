@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlickrNet.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace FlickrLibrary.CredentialsManagers.Interfaces
 {
     public interface ICredentialsManager
     {
-        void SaveCredentials(ICredential credential);
+        void SaveCredentials(string key, OAuthAccessToken credential);
 
-        ICredential GetCredentials();
+        OAuthAccessToken GetCredentials(string key);
     }
 }
