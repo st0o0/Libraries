@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -31,11 +30,6 @@ namespace WPFLibrary.Input
         private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new(nameof(IsRunning));
 
         /// <summary>
-        /// The <see cref="Func{TResult}"/> to invoke when <see cref="Execute(T)"/> is used.
-        /// </summary>
-        private readonly Func<T, Task> execute = null;
-
-        /// <summary>
         /// The cancelable <see cref="Func{T1,T2,TResult}"/> to invoke when <see cref="Execute(object?)"/> is used.
         /// </summary>
         private readonly Func<T, CancellationToken, Task> cancelableExecute = null;
@@ -60,6 +54,8 @@ namespace WPFLibrary.Input
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public AsyncRelayCommand(Func<T, Task> execute, bool canExecute = true, CastType castType = CastType.Auto) : this(execute, param => canExecute, castType)
         {
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -70,6 +66,8 @@ namespace WPFLibrary.Input
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public AsyncRelayCommand(Func<T, Task> execute, Func<T, bool> canExecute, CastType castType = CastType.Auto) : this((param, ct) => execute(param), canExecute, castType)
         {
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -79,6 +77,8 @@ namespace WPFLibrary.Input
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, bool canExecute = true, CastType castType = CastType.Auto) : this(cancelableExecute, param => canExecute, castType)
         {
+            ArgumentNullException.ThrowIfNull(cancelableExecute, nameof(cancelableExecute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -89,6 +89,9 @@ namespace WPFLibrary.Input
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public AsyncRelayCommand(Func<T, CancellationToken, Task> cancelableExecute, Func<T, bool> canExecute, CastType castType = CastType.Auto)
         {
+            ArgumentNullException.ThrowIfNull(cancelableExecute, nameof(cancelableExecute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
+
             this.cancellationTokenSource = new CancellationTokenSource();
             this.cancelableExecute = cancelableExecute;
             this.canExecute = canExecute;
@@ -205,13 +208,7 @@ namespace WPFLibrary.Input
                 await this.semaphoreSlim.WaitAsync();
                 NotifyCanExecuteChanged();
 
-                if (this.execute is not null && this.cancelableExecute is null)
-                {
-                    this.ExecuteTask = this.execute(parameter);
-                    OnPropertyChanged(IsRunningChangedEventArgs);
-                    await this.ExecuteTask;
-                }
-                else
+                if (this.cancelableExecute is not null)
                 {
                     this.ExecuteTask = this.cancelableExecute.Invoke(parameter, this.cancellationTokenSource.Token);
                     OnPropertyChanged(IsRunningChangedEventArgs);

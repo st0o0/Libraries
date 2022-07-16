@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -32,11 +31,6 @@ namespace WPFLibrary.Input
         private static readonly PropertyChangedEventArgs IsRunningChangedEventArgs = new(nameof(IsRunning));
 
         /// <summary>
-        /// The <see cref="Func{TResult}"/> to invoke when <see cref="Execute"/> is used.
-        /// </summary>
-        private readonly Func<Task> execute = null;
-
-        /// <summary>
         /// The cancelable <see cref="Func{T,TResult}"/> to invoke when <see cref="Execute"/> is used.
         /// </summary>
         /// <remarks>Only one between this and <see cref="execute"/> is not <see langword="null"/>.</remarks>
@@ -45,7 +39,7 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The optional action to invoke when <see cref="CanExecute"/> is used.
         /// </summary>
-        private readonly Expression<Func<bool>> canExecute;
+        private readonly Func<bool> canExecute;
 
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
@@ -57,21 +51,10 @@ namespace WPFLibrary.Input
         /// Initializes a new instance of the <see cref="AsyncRelayCommand"/> class that can always execute.
         /// </summary>
         /// <param name="execute">The execution logic.</param>
-        public AsyncRelayCommand(Func<Task> execute)
+        public AsyncRelayCommand(Func<Task> execute, bool canExecute = true) : this(execute, () => canExecute)
         {
-            this.execute = execute;
-            this.canExecute = () => true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AsyncRelayCommand"/> class that can always execute.
-        /// </summary>
-        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
-        public AsyncRelayCommand(Func<CancellationToken, Task> cancelableExecute)
-        {
-            this.cancellationTokenSource = new CancellationTokenSource();
-            this.cancelableExecute = cancelableExecute;
-            this.canExecute = () => true;
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -79,10 +62,20 @@ namespace WPFLibrary.Input
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
-        public AsyncRelayCommand(Func<Task> execute, Expression<Func<bool>> canExecute)
+        public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute) : this((ct) => execute(), canExecute)
         {
-            this.execute = execute;
-            this.canExecute = canExecute;
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsyncRelayCommand"/> class that can always execute.
+        /// </summary>
+        /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
+        public AsyncRelayCommand(Func<CancellationToken, Task> cancelableExecute, bool canExecute = true) : this(cancelableExecute, () => canExecute)
+        {
+            ArgumentNullException.ThrowIfNull(cancelableExecute, nameof(cancelableExecute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -90,8 +83,11 @@ namespace WPFLibrary.Input
         /// </summary>
         /// <param name="cancelableExecute">The <paramref name="cancelableExecute"/> execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
-        public AsyncRelayCommand(Func<CancellationToken, Task> cancelableExecute, Expression<Func<bool>> canExecute)
+        public AsyncRelayCommand(Func<CancellationToken, Task> cancelableExecute, Func<bool> canExecute)
         {
+            ArgumentNullException.ThrowIfNull(cancelableExecute, nameof(cancelableExecute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
+
             this.cancellationTokenSource = new CancellationTokenSource();
             this.cancelableExecute = cancelableExecute;
             this.canExecute = canExecute;
@@ -126,7 +122,7 @@ namespace WPFLibrary.Input
             {
                 return false;
             }
-            return canExecute.Compile().Invoke() != false;
+            return canExecute.Invoke() != false;
         }
 
         /// <inheritdoc/>
@@ -141,13 +137,7 @@ namespace WPFLibrary.Input
             try
             {
                 await semaphoreSlim.WaitAsync();
-                if (this.execute is not null)
-                {
-                    this.ExecuteTask = this.execute();
-                    OnPropertyChanged(IsRunningChangedEventArgs);
-                    await this.ExecuteTask;
-                }
-                else if (this.cancelableExecute is not null)
+                if (this.cancelableExecute is not null)
                 {
                     this.ExecuteTask = this.cancelableExecute.Invoke(this.cancellationTokenSource.Token);
                     OnPropertyChanged(IsRunningChangedEventArgs);

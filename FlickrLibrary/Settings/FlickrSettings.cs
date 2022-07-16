@@ -6,11 +6,15 @@ namespace FlickrLibrary.Settings
     {
         public FlickrSettings(string apiKey, string sharedKey)
         {
-            this.APIKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
-            this.SharedKey = sharedKey ?? throw new ArgumentNullException(nameof(sharedKey));
+            ArgumentNullException.ThrowIfNull(apiKey, nameof(apiKey));
+            ArgumentNullException.ThrowIfNull(sharedKey, nameof(sharedKey));
+
+            this.APIKey = apiKey;
+            this.SharedKey = sharedKey;
         }
 
         public string APIKey { get; init; }
+
         public string SharedKey { get; init; }
     }
 }

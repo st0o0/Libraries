@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Windows.Input;
 using WPFLibrary.Extensions;
 
@@ -35,8 +34,10 @@ namespace WPFLibrary.Input
         /// nullable <see cref="object"/> parameter, it is recommended that if <typeparamref name="T"/> is a reference type,
         /// you should always declare it as nullable, and to always perform checks within <paramref name="execute"/>.
         /// </remarks>
-        public RelayCommand(Action<T> execute, bool canExcute = true, CastType castType = CastType.Auto) : this(execute, param => canExcute, castType)
+        public RelayCommand(Action<T> execute, bool canExecute = true, CastType castType = CastType.Auto) : this(execute, param => canExecute, castType)
         {
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -47,6 +48,9 @@ namespace WPFLibrary.Input
         /// <remarks>See notes in <see cref="RelayCommand{T}(Action{T})"/>.</remarks>
         public RelayCommand(Action<T> execute, Func<T, bool> canExecute, CastType castType = CastType.Auto)
         {
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
+
             this.execute = execute;
             this.canExecute = canExecute;
             this.castType = castType == CastType.Auto ? typeof(T).IsEnum ? CastType.Enum : typeof(T).IsPrimitive ? CastType.HardCast : CastType.SoftCast : castType;
@@ -68,7 +72,7 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public bool CanExecute(T parameter)
         {
-            return canExecute.Invoke(parameter);
+            return canExecute.Invoke(parameter) != false;
         }
 
         /// <inheritdoc/>

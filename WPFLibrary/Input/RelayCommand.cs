@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace WPFLibrary.Input
@@ -15,7 +14,7 @@ namespace WPFLibrary.Input
         /// <summary>
         /// The optional action to invoke when <see cref="CanExecute"/> is used.
         /// </summary>
-        private readonly Expression<Func<bool>> canExecute;
+        private readonly Func<bool> canExecute;
 
         /// <summary>
         /// The <see cref="Action"/> to invoke when <see cref="Execute"/> is used.
@@ -26,10 +25,10 @@ namespace WPFLibrary.Input
         /// Initializes a new instance of the <see cref="RelayCommand"/> class that can always execute.
         /// </summary>
         /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action execute)
+        public RelayCommand(Action execute, bool canExecute = true) : this(execute, () => canExecute)
         {
-            this.execute = execute;
-            this.canExecute = () => true;
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
         }
 
         /// <summary>
@@ -37,8 +36,11 @@ namespace WPFLibrary.Input
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action execute, Expression<Func<bool>> canExecute)
+        public RelayCommand(Action execute, Func<bool> canExecute)
         {
+            ArgumentNullException.ThrowIfNull(execute, nameof(execute));
+            ArgumentNullException.ThrowIfNull(canExecute, nameof(canExecute));
+
             this.execute = execute;
             this.canExecute = canExecute;
         }
@@ -59,7 +61,7 @@ namespace WPFLibrary.Input
         /// <inheritdoc/>
         public bool CanExecute(object parameter)
         {
-            return this.canExecute.Compile().Invoke() != false;
+            return this.canExecute.Invoke() != false;
         }
 
         /// <inheritdoc/>
