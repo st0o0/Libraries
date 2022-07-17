@@ -1,22 +1,34 @@
-﻿using CacheLibrary.CacheItems;
+﻿using CacheLibrary.CacheItemConverters;
+using CacheLibrary.CacheItemConverters.Interfaces;
 using CacheLibrary.CacheItems.Interfaces;
 using CacheLibrary.Caches.Interfaces;
 using CacheLibrary.Helpers;
 using System.Collections.Concurrent;
-using System.Text;
 
 namespace CacheLibrary.Caches.Bases
 {
-    public abstract class CacheBase : ICache
+    public abstract class CacheBase<CacheItemType> : ICache<CacheItemType> where CacheItemType : class, ICacheItem
     {
         private readonly AESPipeline pipeline = new AESPipeline().SetIV("SYndUTmhW4EMjObD", 16).SetKey("WEM3HtxPumZP7ErDR3A5dGGJCZyqJG7x", 32);
 
-        private readonly string _filepath;
+        private object lockObject = new();
+        private readonly FileInfo _fileinfo;
+        private readonly ICacheItemConverter cacheItemConverter;
+
+        protected CacheBase(string filePath, ICacheItemConverter cacheItemConverter) : this(filePath)
+        {
+            this.cacheItemConverter = cacheItemConverter ??= new DefaultCacheItemConverter();
+        }
 
         protected CacheBase(string filePath)
         {
-            this._filepath = filePath;
-            using FileStream fs = new(_filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            this._fileinfo = new FileInfo(filePath);
+            if (OperatingSystem.IsWindows())
+            {
+                _fileinfo.Decrypt();
+            }
+
+            using FileStream fs = OpenStream();
             Load(fs);
         }
 
@@ -30,10 +42,10 @@ namespace CacheLibrary.Caches.Bases
 
         public bool AddOrUpdate(string key, ICacheItem item)
         {
-            lock (_filepath)
+            lock (lockObject)
             {
                 ICacheItem cacheItem = DataTable.AddOrUpdate(key, item, (s, oldItem) => item);
-                using FileStream fs = new(_filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                using FileStream fs = OpenStream();
                 Store(fs);
                 return cacheItem != null;
             }
@@ -41,29 +53,62 @@ namespace CacheLibrary.Caches.Bases
 
         public void Reload()
         {
-            lock (_filepath)
+            lock (lockObject)
             {
-                using FileStream fs = new(_filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                using FileStream fs = OpenStream();
                 Load(fs);
+            }
+        }
+
+        public bool RemoveKey(string key)
+        {
+            lock (lockObject)
+            {
+                bool result = DataTable.TryRemove(key, out _);
+                using FileStream fs = OpenStream();
+                Store(fs);
+                return result;
+            }
+        }
+
+        public bool RemoveKey(string key, TimeSpan olderThen)
+        {
+            ICacheItem item = this.Get(key);
+            if (item is not null)
+            {
+                if (item.CreationTime < DateTime.Now.Subtract(olderThen))
+                {
+                    this.RemoveKey(key);
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                return false;
             }
         }
 
         public void Clear()
         {
-            lock (_filepath)
+            lock (lockObject)
             {
                 DataTable.Clear();
-                using FileStream fs = new(_filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                using FileStream fs = OpenStream();
                 Store(fs);
             }
         }
 
         public void Dispose()
         {
-            lock (_filepath)
+            lock (lockObject)
             {
-                using FileStream fs = new(_filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                using FileStream fs = OpenStream();
                 Store(fs);
+            }
+            if (OperatingSystem.IsWindows())
+            {
+                _fileinfo.Encrypt();
             }
             pipeline.Dispose();
             GC.SuppressFinalize(this);
@@ -75,7 +120,8 @@ namespace CacheLibrary.Caches.Bases
 
             foreach (var item in DataTable)
             {
-                sw.WriteLine(pipeline.Encrypt($"{item.Key}:{Encoding.UTF8.GetBytes($"{Convert.ToBase64String(item.Value.Data)}:{item.Value.CreationTime.Ticks}")}"));
+                byte[] data = cacheItemConverter.ConvertTo(item.Value);
+                sw.WriteLine(pipeline.Encrypt($"{item.Key}:{Convert.ToBase64String(data, Base64FormattingOptions.None)}"));
             }
         }
 
@@ -90,9 +136,11 @@ namespace CacheLibrary.Caches.Bases
                 if (!(string.IsNullOrWhiteSpace(item) || string.IsNullOrEmpty(item)))
                 {
                     string[] values = pipeline.Decrypt(item).Split(":");
-                    DataTable[values[0]] = new CacheItem(new(Convert.ToInt64(values[2]), DateTimeKind.Local), Convert.FromBase64String(values[1]));
+                    DataTable[values[0]] = cacheItemConverter.ConvertTo(Convert.FromBase64String(values[1]));
                 }
             }
         }
+
+        private FileStream OpenStream() => _fileinfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
     }
 }

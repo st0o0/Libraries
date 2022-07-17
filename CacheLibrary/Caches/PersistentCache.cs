@@ -1,11 +1,5 @@
-﻿using CacheLibrary.Caches.Bases;
-using CacheLibrary.Caches.Interfaces;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CacheLibrary.CacheItems;
+using CacheLibrary.Caches.Bases;
 
 namespace CacheLibrary.Caches
 {
@@ -16,7 +10,7 @@ namespace CacheLibrary.Caches
     /// protected by the lockFile.  Private methods should
     /// not acquire the lockFile as it is not reentrant.
     /// </summary>
-    public sealed class PersistentCache : CacheBase
+    public sealed class PersistentCache : CacheBase<CacheItem>
     {
         public PersistentCache(string filepath) : base(filepath)
         {
