@@ -1,25 +1,86 @@
 ﻿using FlickrLibrary.CredentialsManagers.Interfaces;
+using FlickrNet.Common;
 using FlickrNet.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FlickrLibrary.CredentialsManagers
 {
     internal sealed class CredentialsManager : ICredentialsManager
     {
-        private readonly byte[] salt = Encoding.UTF8.GetBytes("vjEyLnw6ZKIECNFkm0tB");
+        private readonly ConcurrentDictionary<string, OAuthAccessToken> _keyValuePairs = new();
+
+        private readonly string filepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FlickrNet", "file.dat");
 
         public CredentialsManager()
         {
+            Reload();
         }
 
-        private OAuthAccessToken DecodingData(byte[] bytes)
+        public OAuthAccessToken GetCredentials(string key)
         {
-            string[] items = AESHelper.Decrypt(Encoding.UTF8.GetString(bytes)).Split("//");
+            return _keyValuePairs[key];
+        }
+
+        public bool SaveCredentials(string key, OAuthAccessToken credential)
+        {
+            if (_keyValuePairs.ContainsKey(key))
+            {
+                return false;
+            }
+            _keyValuePairs.AddOrUpdate(key, credential, (s, item) => credential);
+            Store();
+            return true;
+        }
+
+        public bool RemoveKey(string key)
+        {
+            if (_keyValuePairs.ContainsKey(key))
+            {
+                return false;
+            }
+            _keyValuePairs.Remove(key, out _);
+            Store();
+            return true;
+        }
+
+        private void Reload()
+        {
+            lock (this)
+            {
+                using FileStream fs = new(filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                using StreamReader sr = new(fs);
+                _keyValuePairs.Clear();
+
+                foreach (string item in sr.ReadToEnd().Split(Environment.NewLine))
+                {
+                    if (!(string.IsNullOrWhiteSpace(item) || string.IsNullOrEmpty(item)))
+                    {
+                        string[] values = AESHelper.Decrypt(item).Split(":");
+                        _keyValuePairs[values[0]] = DecryptData(values[1]);
+                    }
+                }
+            }
+        }
+
+        private void Store()
+        {
+            lock (this)
+            {
+                using FileStream fs = new(filepath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                fs.Position = 0;
+                using StreamWriter sw = new(fs);
+                foreach (var item in _keyValuePairs)
+                {
+                    sw.WriteLine(AESHelper.Encrypt($"{item.Key}:{EncryptData(item.Value)}"));
+                }
+            }
+        }
+
+        private static OAuthAccessToken DecryptData(string value)
+        {
+            string[] items = AESHelper.Decrypt(value).Split("//");
             return new OAuthAccessToken()
             {
                 Token = items[0],
@@ -30,7 +91,7 @@ namespace FlickrLibrary.CredentialsManagers
             };
         }
 
-        private string EncodingData(OAuthAccessToken accessToken)
+        private static string EncryptData(OAuthAccessToken accessToken)
         {
             StringBuilder sb = new StringBuilder().AppendJoin("//", new[] { accessToken.Token, accessToken.TokenSecret, accessToken.FullName, accessToken.UserId, accessToken.Username });
             return AESHelper.Encrypt(sb.ToString());

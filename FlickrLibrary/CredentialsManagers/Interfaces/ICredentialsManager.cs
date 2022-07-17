@@ -9,8 +9,10 @@ namespace FlickrLibrary.CredentialsManagers.Interfaces
 {
     public interface ICredentialsManager
     {
-        void SaveCredentials(string key, OAuthAccessToken credential);
+        bool SaveCredentials(string key, OAuthAccessToken credential);
 
         OAuthAccessToken GetCredentials(string key);
+
+        bool RemoveKey(string key);
     }
 }
