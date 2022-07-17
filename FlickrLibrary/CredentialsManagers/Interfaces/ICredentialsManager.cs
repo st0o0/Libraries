@@ -14,5 +14,9 @@ namespace FlickrLibrary.CredentialsManagers.Interfaces
         OAuthAccessToken GetCredentials(string key);
 
         bool RemoveKey(string key);
+
+        void Reload();
+
+        void Clear();
     }
 }

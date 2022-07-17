@@ -1,20 +1,23 @@
 ﻿using FlickrLibrary.AuthHelpers.Interfaces;
+using FlickrLibrary.CredentialsManagers.Interfaces;
 using FlickrLibrary.Settings.Interfaces;
 using FlickrNet;
 using FlickrNet.Models;
 
 namespace FlickrLibrary.AuthHelpers
 {
-    public abstract class FlickrAuthHelper : IFlickrAuthHelper
+    public class FlickrAuthHelper : IFlickrAuthHelper
     {
         private readonly IFlickrSettings flickrSettings;
+        private readonly ICredentialsManager credentialsManager;
 
         private static Flickr flickr;
         private static Flickr authflickr;
 
-        protected FlickrAuthHelper(IFlickrSettings settings)
+        public FlickrAuthHelper(IFlickrSettings flickrSettings, ICredentialsManager credentialsManager)
         {
-            this.flickrSettings = settings;
+            this.flickrSettings = flickrSettings;
+            this.credentialsManager = credentialsManager;
         }
 
         public Flickr GetInstance()
@@ -31,10 +34,10 @@ namespace FlickrLibrary.AuthHelpers
             };
         }
 
-        public abstract OAuthAccessToken OAuthToken
+        public virtual OAuthAccessToken OAuthToken
         {
-            get;
-            set;
+            get => this.credentialsManager.GetCredentials("FlickrNet_OAuthAccessToken");
+            set => this.credentialsManager.SaveCredentials("FlickrNet_OAuthAccessToken", value);
         }
     }
 }
