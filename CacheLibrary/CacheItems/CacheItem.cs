@@ -16,15 +16,19 @@ namespace CacheLibrary.CacheItems
             Data = data;
         }
 
-        public CacheItem(byte[] data)
+        protected CacheItem(byte[] data)
         {
             CreationTime = DateTime.Now;
             Data = data;
         }
 
+        protected CacheItem()
+        {
+        }
+
         public DateTime CreationTime { get; init; }
 
-        public byte[] Data { get; init; }
+        public virtual byte[] Data { get; init; }
 
         public long DataSize => Data is null ? 0 : Data.Length;
 

@@ -1,11 +1,11 @@
 ﻿using CacheLibrary.CacheItems.Interfaces;
 
-namespace CacheLibrary.CacheItemConverters.Interfaces
+namespace CacheLibrary.CacheItemConverters
 {
-    public interface ICacheItemConverter
+    public interface ICacheItemConverter<TCacheItemType> where TCacheItemType : class, ICacheItem
     {
-        ICacheItem ConvertTo(byte[] bytes);
+        TCacheItemType ConvertTo(byte[] bytes);
 
-        byte[] ConvertTo(ICacheItem modelType);
+        byte[] ConvertTo(TCacheItemType modelType);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using CacheLibrary.CacheItemConverters;
-using CacheLibrary.CacheItemConverters.Interfaces;
 using CacheLibrary.CacheItems.Interfaces;
 using CacheLibrary.Caches.Interfaces;
 using CacheLibrary.Helpers;
@@ -7,17 +6,17 @@ using System.Collections.Concurrent;
 
 namespace CacheLibrary.Caches.Bases
 {
-    public abstract class CacheBase<CacheItemType> : ICache<CacheItemType> where CacheItemType : class, ICacheItem
+    public abstract class CacheBase<CacheItemType> : Cache, ICacheBase<CacheItemType> where CacheItemType : class, ICacheItem
     {
         private readonly AESPipeline pipeline = new AESPipeline().SetIV("SYndUTmhW4EMjObD", 16).SetKey("WEM3HtxPumZP7ErDR3A5dGGJCZyqJG7x", 32);
 
-        private object lockObject = new();
+        private readonly object lockObject = new();
         private readonly FileInfo _fileinfo;
-        private readonly ICacheItemConverter cacheItemConverter;
+        private readonly ICacheItemConverter<CacheItemType> cacheItemConverter;
 
-        protected CacheBase(string filePath, ICacheItemConverter cacheItemConverter) : this(filePath)
+        protected CacheBase(string filePath, ICacheItemConverter<CacheItemType> cacheItemConverter) : this(filePath)
         {
-            this.cacheItemConverter = cacheItemConverter ??= new DefaultCacheItemConverter();
+            ArgumentNullException.ThrowIfNull(cacheItemConverter, nameof(cacheItemConverter));
         }
 
         protected CacheBase(string filePath)
@@ -32,15 +31,19 @@ namespace CacheLibrary.Caches.Bases
             Load(fs);
         }
 
-        protected ConcurrentDictionary<string, ICacheItem> DataTable { get; init; } = new();
+        protected CacheBase()
+        {
+        }
 
-        public ICacheItem Get(string key)
+        protected ConcurrentDictionary<string, CacheItemType> DataTable { get; init; } = new();
+
+        public CacheItemType Get(string key)
         {
             ArgumentNullException.ThrowIfNull(key, nameof(key));
             return DataTable.GetValueOrDefault(key);
         }
 
-        public bool AddOrUpdate(string key, ICacheItem item)
+        public bool AddOrUpdate(string key, CacheItemType item)
         {
             lock (lockObject)
             {
@@ -99,7 +102,7 @@ namespace CacheLibrary.Caches.Bases
             }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             lock (lockObject)
             {
@@ -111,7 +114,7 @@ namespace CacheLibrary.Caches.Bases
                 _fileinfo.Encrypt();
             }
             pipeline.Dispose();
-            GC.SuppressFinalize(this);
+            base.Dispose();
         }
 
         protected virtual void Store(Stream destination)

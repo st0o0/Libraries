@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CacheLibrary.Helpers
 {
-    internal static class AESHelper
+    public static class AESHelper
     {
         private static byte[] _aesIV128 = Encoding.UTF8.GetBytes(StringGenerator.GenerateString(16));
 
@@ -21,7 +17,7 @@ namespace CacheLibrary.Helpers
 
         public static void SetIV(string value) => _aesIV128 = Encoding.UTF8.GetBytes(value);
 
-        public static string Encrypt(string plainText)
+        public static string Encrypt(string value)
         {
             using Aes aes = Aes.Create();
             aes.KeySize = 256;
@@ -33,11 +29,11 @@ namespace CacheLibrary.Helpers
             using MemoryStream ms = new();
             using CryptoStream cs = new(ms, aes.CreateEncryptor(), CryptoStreamMode.Write);
             using StreamWriter sw = new(cs);
-            sw.Write(plainText);
+            sw.Write(value);
             return Encoding.UTF8.GetString(ms.ToArray());
         }
 
-        public static string Decrypt(string text)
+        public static string Decrypt(string value)
         {
             using Aes aes = Aes.Create();
             aes.KeySize = 256;
@@ -46,7 +42,7 @@ namespace CacheLibrary.Helpers
             aes.Key = _aesKey256;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
-            using MemoryStream ms = new(Encoding.UTF8.GetBytes(text));
+            using MemoryStream ms = new(Encoding.UTF8.GetBytes(value));
             using CryptoStream cs = new(ms, aes.CreateDecryptor(), CryptoStreamMode.Write);
             using StreamReader sr = new(cs);
             return sr.ReadToEnd();
@@ -80,7 +76,7 @@ namespace CacheLibrary.Helpers
         }
     }
 
-    internal sealed class AESPipeline : IDisposable
+    public sealed class AESPipeline : IDisposable
     {
         private readonly Aes aes = Aes.Create();
 
