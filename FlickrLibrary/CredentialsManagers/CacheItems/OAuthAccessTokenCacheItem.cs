@@ -1,13 +1,8 @@
 ﻿using CacheLibrary.CacheItems;
-using CacheLibrary.CacheItems.Interfaces;
 using CacheLibrary.Helpers;
 using FlickrLibrary.CredentialsManagers.CacheItems.Interfaces;
 using FlickrNet.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FlickrLibrary.CredentialsManagers.CacheItems
 {

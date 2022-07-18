@@ -24,7 +24,7 @@ namespace CacheLibrary.Caches.Bases
             this._fileinfo = new FileInfo(filePath);
             if (OperatingSystem.IsWindows())
             {
-                _fileinfo.Decrypt();
+                _fileinfo.Decrypt(); 3
             }
 
             using FileStream fs = OpenStream();
