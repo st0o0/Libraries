@@ -1,4 +1,5 @@
-﻿using CacheLibrary.CacheItems;
+﻿using CacheLibrary.CacheItemConverters;
+using CacheLibrary.CacheItems;
 using CacheLibrary.Caches.Bases;
 
 namespace CacheLibrary.Caches
@@ -12,7 +13,7 @@ namespace CacheLibrary.Caches
     /// </summary>
     public sealed class PersistentCache : CacheBase<CacheItem>
     {
-        public PersistentCache(string filepath) : base(filepath)
+        public PersistentCache(string filepath) : base(filepath, new DefaultCacheItemConverter())
         {
         }
     }

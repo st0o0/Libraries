@@ -14,17 +14,14 @@ namespace CacheLibrary.Caches.Bases
         private readonly FileInfo _fileinfo;
         private readonly ICacheItemConverter<CacheItemType> cacheItemConverter;
 
-        protected CacheBase(string filePath, ICacheItemConverter<CacheItemType> cacheItemConverter) : this(filePath)
+        protected CacheBase(string filePath, ICacheItemConverter<CacheItemType> cacheItemConverter)
         {
             ArgumentNullException.ThrowIfNull(cacheItemConverter, nameof(cacheItemConverter));
-        }
 
-        protected CacheBase(string filePath)
-        {
             this._fileinfo = new FileInfo(filePath);
-            if (OperatingSystem.IsWindows())
+            if (OperatingSystem.IsWindows() && _fileinfo.Exists)
             {
-                _fileinfo.Decrypt(); 3
+                _fileinfo.Decrypt();
             }
 
             using FileStream fs = OpenStream();
@@ -109,7 +106,7 @@ namespace CacheLibrary.Caches.Bases
                 using FileStream fs = OpenStream();
                 Store(fs);
             }
-            if (OperatingSystem.IsWindows())
+            if (OperatingSystem.IsWindows() && _fileinfo.Exists)
             {
                 _fileinfo.Encrypt();
             }
