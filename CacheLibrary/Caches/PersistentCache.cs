@@ -13,6 +13,10 @@ namespace CacheLibrary.Caches
     /// </summary>
     public sealed class PersistentCache : CacheBase<CacheItem>
     {
+        public PersistentCache() : this(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cache", $"{typeof(CacheItem).Name}_data.dat"))
+        {
+        }
+
         public PersistentCache(string filepath) : base(filepath, new DefaultCacheItemConverter())
         {
         }

@@ -1,8 +1,10 @@
-﻿namespace FlickrLibrary.Managements.Interfaces
+﻿using FlickrNet.Models;
+
+namespace FlickrLibrary.Managements.Interfaces
 {
     public interface IFlickrManagement
     {
-        Task<string> CreatePhotoSetAsync(string title, string primaryPhotoId, CancellationToken cancellationToken = default);
+        Task<Photoset> CreatePhotoSetAsync(string title, string primaryPhotoId, CancellationToken cancellationToken = default);
 
         Task AddPhotoToPhotoSetAsync(string photoSetId, string photoId, CancellationToken cancellationToken = default);
 
@@ -20,6 +22,6 @@
 
         Task PhotoEditMetaAsync(string photoId, string title, string description, CancellationToken cancellationToken = default);
 
-        bool LoginCheck();
+        Task<bool> LoginCheckAsync(CancellationToken cancellationToken = default);
     }
 }

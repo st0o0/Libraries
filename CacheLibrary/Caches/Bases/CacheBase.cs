@@ -18,7 +18,9 @@ namespace CacheLibrary.Caches.Bases
         {
             ArgumentNullException.ThrowIfNull(cacheItemConverter, nameof(cacheItemConverter));
 
+            this.cacheItemConverter = cacheItemConverter;
             this._fileinfo = new FileInfo(filePath);
+
             if (OperatingSystem.IsWindows() && _fileinfo.Exists)
             {
                 _fileinfo.Decrypt();
@@ -26,10 +28,6 @@ namespace CacheLibrary.Caches.Bases
 
             using FileStream fs = OpenStream();
             Load(fs);
-        }
-
-        protected CacheBase()
-        {
         }
 
         protected ConcurrentDictionary<string, CacheItemType> DataTable { get; init; } = new();

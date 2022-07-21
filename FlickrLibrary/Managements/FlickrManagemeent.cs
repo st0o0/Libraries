@@ -1,52 +1,67 @@
-﻿using FlickrLibrary.Managements.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlickrLibrary.AuthHelpers.Interfaces;
+using FlickrLibrary.Managements.Interfaces;
+using FlickrNet;
+using FlickrNet.Models;
 
 namespace FlickrLibrary.Managements
 {
     public sealed class FlickrManagement : IFlickrManagement
     {
-        public Task AddPhotoToPhotoSetAsync(string photoSetId, string photoId, CancellationToken cancellationToken = default)
+        private readonly Flickr authFlickrInstance;
+
+        public FlickrManagement(IFlickrAuthHelper flickrAuthHelper)
         {
-            throw new NotImplementedException();
+            this.authFlickrInstance = flickrAuthHelper.GetAuthInstance();
         }
 
-        public Task<string> CreatePhotoSetAsync(string title, string primaryPhotoId, CancellationToken cancellationToken = default)
+        //TODO: LUL nicht fertig
+        public async Task AddPhotoToPhotoSetAsync(string photoSetId, string photoId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(photoSetId, nameof(photoSetId));
+            ArgumentNullException.ThrowIfNull(photoId, nameof(photoId));
+            await this.authFlickrInstance.PhotosetsAddPhotoAsync(photoSetId, photoId, cancellationToken);
         }
 
-        public Task DeletePhotoAsync(string photoId, CancellationToken cancellationToken = default)
+        public async Task<Photoset> CreatePhotoSetAsync(string title, string primaryPhotoId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(title, nameof(title));
+            ArgumentNullException.ThrowIfNull(primaryPhotoId, nameof(primaryPhotoId));
+            return await this.authFlickrInstance.PhotosetsCreateAsync(title, primaryPhotoId, cancellationToken);
         }
 
-        public Task DeletePhotoSetAsync(string photoSetId, CancellationToken cancellationToken = default)
+        public async Task DeletePhotoAsync(string photoId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(photoId, nameof(photoId));
+            await this.authFlickrInstance.PhotoDeleteAsync(photoId, cancellationToken);
         }
 
-        public Task<string> GetLargePathAsync(string photoId, CancellationToken cancellationToken = default)
+        public async Task DeletePhotoSetAsync(string photoSetId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(photoSetId, nameof(photoSetId));
+            await this.authFlickrInstance.PhotosetsDeleteAsync(photoSetId, cancellationToken);
         }
 
-        public Task<string> GetOrginalPathAsync(string photoId, CancellationToken cancellationToken = default)
+        public async Task<string> GetLargePathAsync(string photoId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(photoId, nameof(photoId));
+            return (await this.authFlickrInstance.PhotosGetInfoAsync(photoId, cancellationToken)).LargeUrl;
         }
 
-        public Task<string> GetThumbnailPathAsync(string photoId, CancellationToken cancellationToken = default)
+        public async Task<string> GetOrginalPathAsync(string photoId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(photoId, nameof(photoId));
+            return (await this.authFlickrInstance.PhotosGetInfoAsync(photoId, cancellationToken)).OriginalUrl;
         }
 
-        public bool LoginCheck()
+        public async Task<string> GetThumbnailPathAsync(string photoId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(photoId, nameof(photoId));
+            return (await this.authFlickrInstance.PhotosGetInfoAsync(photoId, cancellationToken)).ThumbnailUrl;
+        }
+
+        public async Task<bool> LoginCheckAsync(CancellationToken cancellationToken = default)
+        {
+            return (await this.authFlickrInstance.TestLoginAsync(cancellationToken)).UserName != null;
         }
 
         public Task PhotoEditMetaAsync(string photoId, string title, string description, CancellationToken cancellationToken = default)

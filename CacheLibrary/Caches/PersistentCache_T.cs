@@ -6,8 +6,7 @@ namespace CacheLibrary.Caches
 {
     public class PersistentCache<CacheItemType> : CacheBase<CacheItemType> where CacheItemType : class, ICacheItem
     {
-        public PersistentCache() : base()
-
+        public PersistentCache(ICacheItemConverter<CacheItemType> cacheItemConverter) : base(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cache", $"{typeof(CacheItemType).Name}_data.dat"), cacheItemConverter)
         {
         }
 

@@ -1,5 +1,4 @@
 ﻿using CacheLibrary.CacheItems;
-using CacheLibrary.CacheItems.Interfaces;
 using System.Text;
 
 namespace CacheLibrary.CacheItemConverters

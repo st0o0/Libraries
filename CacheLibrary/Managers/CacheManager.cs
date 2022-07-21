@@ -6,7 +6,7 @@ namespace CacheLibrary.Managers
     {
         private readonly Dictionary<Type, Cache> caches = new();
 
-        public TCacheType GetCache<TCacheType>(Func<string, TCacheType> func = default, string filepath = default) where TCacheType : Cache, new()
+        public TCacheType GetOrCreateCache<TCacheType>(Func<string, TCacheType> func, string filepath = default) where TCacheType : Cache
         {
             lock (caches)
             {
@@ -16,12 +16,47 @@ namespace CacheLibrary.Managers
                 }
                 else
                 {
-                    filepath ??= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cache", "data.dat");
-                    ArgumentNullException.ThrowIfNull(filepath, nameof(filepath));
+                    filepath ??= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cache", $"{typeof(TCacheType).Name}_data.dat");
+                    ArgumentNullException.ThrowIfNull(func, nameof(func));
 
                     TCacheType newCache = func.Invoke(filepath);
                     caches.Add(typeof(TCacheType), newCache);
                     return newCache;
+                }
+            }
+        }
+
+        public bool TryCreateCache<TCacheType>(Func<string, TCacheType> func, string filepath = default) where TCacheType : Cache
+        {
+            lock (caches)
+            {
+                if (caches.TryGetValue(typeof(TCacheType), out Cache cache))
+                {
+                    return false;
+                }
+                else
+                {
+                    filepath ??= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cache", $"{typeof(TCacheType).Name}_data.dat");
+                    ArgumentNullException.ThrowIfNull(func, nameof(func));
+
+                    TCacheType newCache = func.Invoke(filepath);
+                    caches.Add(typeof(TCacheType), newCache);
+                    return true;
+                }
+            }
+        }
+
+        public TCacheType GetCache<TCacheType>() where TCacheType : Cache
+        {
+            lock (caches)
+            {
+                if (caches.TryGetValue(typeof(TCacheType), out Cache cache))
+                {
+                    return (TCacheType)cache;
+                }
+                else
+                {
+                    throw new KeyNotFoundException();
                 }
             }
         }

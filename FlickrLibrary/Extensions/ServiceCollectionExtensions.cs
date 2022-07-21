@@ -1,21 +1,28 @@
 ﻿using FlickrLibrary.AuthHelpers;
 using FlickrLibrary.AuthHelpers.Interfaces;
-using FlickrLibrary.CredentialsManagers;
-using FlickrLibrary.CredentialsManagers.Interfaces;
 using FlickrLibrary.Managements;
 using FlickrLibrary.Managements.Interfaces;
-using FlickrLibrary.Settings;
 using FlickrLibrary.Settings.Interfaces;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddFlickr(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddFlickrNet(this IServiceCollection services, IFlickrSettings flickrSettings)
         {
-            services.AddSingleton<IFlickrSettings>(x => configuration.GetSection("FlickrNet").Get<FlickrSettings>());
-            services.AddSingleton<ICredentialsManager, CredentialsManager>();
+            ArgumentNullException.ThrowIfNull(flickrSettings, nameof(flickrSettings));
+            services.AddCacheManager();
+            services.AddSingleton<IFlickrSettings>(x => flickrSettings);
+            services.AddSingleton<IFlickrAuthHelper, FlickrAuthHelper>();
+            services.AddSingleton<IFlickrManagement, FlickrManagement>();
+            return services;
+        }
+
+        public static IServiceCollection AddFlickrNet(this IServiceCollection services, Func<IServiceProvider, IFlickrSettings> func)
+        {
+            ArgumentNullException.ThrowIfNull(func, nameof(func));
+            services.AddSingleton<IFlickrSettings>(sp => func.Invoke(sp));
+            services.AddCacheManager();
             services.AddSingleton<IFlickrAuthHelper, FlickrAuthHelper>();
             services.AddSingleton<IFlickrManagement, FlickrManagement>();
             return services;

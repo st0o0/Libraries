@@ -4,6 +4,10 @@ namespace CacheLibrary.Managers
 {
     public interface ICacheManager
     {
-        TCacheType GetCache<TCacheType>(Func<string, TCacheType> func = default, string filepath = default) where TCacheType : Cache, new();
+        TCacheType GetOrCreateCache<TCacheType>(Func<string, TCacheType> func, string filepath = default) where TCacheType : Cache;
+
+        bool TryCreateCache<TCacheType>(Func<string, TCacheType> func, string filepath = default) where TCacheType : Cache;
+
+        TCacheType GetCache<TCacheType>() where TCacheType : Cache;
     }
 }
