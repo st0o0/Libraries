@@ -16,9 +16,23 @@ namespace FlickrLibrary.CredentialsManagers
             this.cache = cacheManager.GetOrCreateCache(str => new PersistentCache<OAuthAccessTokenCacheItem>(str, new OAuthAccessTokenCacheItemConverter()));
         }
 
+        public bool TryGetCredentials(string key, out OAuthAccessToken token)
+        {
+            if (this.cache.TryGet(key, out OAuthAccessTokenCacheItem oAuthAccessTokenCacheItem))
+            {
+                token = oAuthAccessTokenCacheItem.OAuthAccessToken;
+                return true;
+            }
+            else
+            {
+                token = null;
+                return false;
+            }
+        }
+
         public OAuthAccessToken GetCredentials(string key) => this.cache.Get(key)?.OAuthAccessToken;
 
-        public bool SaveCredentials(string key, OAuthAccessToken credential) => this.cache.AddOrUpdate(key, new OAuthAccessTokenCacheItem(credential));
+        public bool SaveCredentials(string key, OAuthAccessToken token) => this.cache.AddOrUpdate(key, new OAuthAccessTokenCacheItem(token));
 
         public bool RemoveKey(string key) => this.cache.RemoveKey(key);
 

@@ -6,6 +6,8 @@ namespace CacheLibrary.Caches.Interfaces
     {
         bool AddOrUpdate(string key, CacheItemType item);
 
+        bool TryGet(string key, out CacheItemType cache);
+
         CacheItemType Get(string key);
 
         void Reload();

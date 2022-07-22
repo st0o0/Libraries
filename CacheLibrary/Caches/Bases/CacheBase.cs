@@ -38,6 +38,21 @@ namespace CacheLibrary.Caches.Bases
             return DataTable.GetValueOrDefault(key);
         }
 
+        public bool TryGet(string key, out CacheItemType cache)
+        {
+            CacheItemType result = this.Get(key);
+            if (result == null)
+            {
+                cache = null;
+                return false;
+            }
+            else
+            {
+                cache = result;
+                return true;
+            }
+        }
+
         public bool AddOrUpdate(string key, CacheItemType item)
         {
             lock (lockObject)
