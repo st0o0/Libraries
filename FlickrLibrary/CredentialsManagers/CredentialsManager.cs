@@ -13,7 +13,7 @@ namespace FlickrLibrary.CredentialsManagers
 
         public CredentialsManager(ICacheManager cacheManager)
         {
-            this.cache = cacheManager.GetOrCreateCache(str => new PersistentCache<OAuthAccessTokenCacheItem>(str, new OAuthAccessTokenCacheItemConverter()), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cache", "data.dat"));
+            this.cache = cacheManager.GetOrCreateCache(str => new PersistentCache<OAuthAccessTokenCacheItem>(str, new OAuthAccessTokenCacheItemConverter()));
         }
 
         public OAuthAccessToken GetCredentials(string key) => this.cache.Get(key)?.OAuthAccessToken;

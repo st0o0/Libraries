@@ -52,7 +52,7 @@ namespace CacheLibrary.Helpers
         {
             public static string GenerateString(int length)
             {
-                return GenerateString(new Random(DateTime.Now.Millisecond), length);
+                return GenerateString(null, length);
             }
 
             public static string GenerateString(Random random, int length)
@@ -116,7 +116,7 @@ namespace CacheLibrary.Helpers
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
             using MemoryStream ms = new(Encoding.UTF8.GetBytes(value));
-            using CryptoStream cs = new(ms, aes.CreateDecryptor(), CryptoStreamMode.Write);
+            using CryptoStream cs = new(ms, aes.CreateDecryptor(), CryptoStreamMode.Read);
             using StreamReader sr = new(cs);
             return sr.ReadToEnd();
         }

@@ -1,4 +1,5 @@
-﻿using CacheLibrary.Caches.Bases;
+﻿using CacheLibrary.Caches;
+using CacheLibrary.Caches.Bases;
 
 namespace CacheLibrary.Managers
 {
@@ -60,5 +61,7 @@ namespace CacheLibrary.Managers
                 }
             }
         }
+
+        public static PersistentCache Cache { get; } = new PersistentCache();
     }
 }
