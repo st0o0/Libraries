@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CacheLibrary\CacheLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="FlickrNet">
       <HintPath>..\used_dlls\FlickrNet.dll</HintPath>
     </Reference>

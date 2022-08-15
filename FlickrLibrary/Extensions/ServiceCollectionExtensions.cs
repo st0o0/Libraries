@@ -11,7 +11,13 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddFlickrNet(this IServiceCollection services, IFlickrSettings flickrSettings)
         {
             ArgumentNullException.ThrowIfNull(flickrSettings, nameof(flickrSettings));
-            services.AddCacheManager();
+            services.AddEasyCaching(option =>
+            {
+                option.UseLiteDB(config =>
+                {
+                    config.DBConfig = new EasyCaching.LiteDB.LiteDBDBOptions() { FileName = "FlickrCache.db", Password = "OMEGALUL" };
+                });
+            });
             services.AddSingleton<IFlickrSettings>(x => flickrSettings);
             services.AddSingleton<IFlickrAuthHelper, FlickrAuthHelper>();
             services.AddSingleton<IFlickrManagement, FlickrManagement>();
@@ -21,8 +27,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddFlickrNet(this IServiceCollection services, Func<IServiceProvider, IFlickrSettings> func)
         {
             ArgumentNullException.ThrowIfNull(func, nameof(func));
+
             services.AddSingleton<IFlickrSettings>(sp => func.Invoke(sp));
-            services.AddCacheManager();
             services.AddSingleton<IFlickrAuthHelper, FlickrAuthHelper>();
             services.AddSingleton<IFlickrManagement, FlickrManagement>();
             return services;
