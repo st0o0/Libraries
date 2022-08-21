@@ -1,6 +1,5 @@
 ﻿using CachingLibrary.Managers.Interfaces;
 using EasyCaching.Core;
-using System;
 
 namespace CachingLibrary.Managers
 {
