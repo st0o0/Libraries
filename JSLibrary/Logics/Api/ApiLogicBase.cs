@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Api
 {
-    public class ApiLogicBase<ModelType> : ApiLogic, IApiLogicBase<ModelType> where ModelType : class, IAPIModel
+    public class APILogicBase<ModelType> : APILogic, IAPILogicBase<ModelType> where ModelType : class, IAPIModel
     {
-        public ApiLogicBase(string modelName, string httpClientName, IHttpClientFactory contextType) : this(modelName, contextType.CreateClient(httpClientName))
+        public APILogicBase(string modelName, string httpClientName, IHttpClientFactory contextType) : this(modelName, contextType.CreateClient(httpClientName))
         {
         }
 
-        public ApiLogicBase(string modelName, HttpClient contextType) : base(contextType)
+        public APILogicBase(string modelName, HttpClient contextType) : base(contextType)
         {
             this.ModelName = modelName;
             this.RelativeApiPath = modelName.ToLower();

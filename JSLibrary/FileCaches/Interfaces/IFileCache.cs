@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.FileCaches.Interfaces
 {
-    public interface IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IApiLogicBase<ModelType> where ModelType : class, IFileCacheModel
+    public interface IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IAPILogicBase<ModelType> where ModelType : class, IFileCacheModel
     {
         Task DownloadAsync(ModelType model, CancellationToken cancellationToken = default);
 

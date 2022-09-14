@@ -4,9 +4,9 @@ using System.Net.Http;
 
 namespace JSLibrary.Logics.Api
 {
-    public abstract class ApiLogic : IApiLogic
+    public abstract class APILogic : IAPILogic
     {
-        protected ApiLogic(HttpClient httpClient)
+        protected APILogic(HttpClient httpClient)
         {
             this.HttpClient = httpClient;
         }

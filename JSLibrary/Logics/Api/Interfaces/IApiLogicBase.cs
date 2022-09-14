@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Api.Interfaces
 {
-    public interface IApiLogicBase<ModelType> : IApiLogic where ModelType : class, IAPIModel
+    public interface IAPILogicBase<ModelType> : IAPILogic where ModelType : class, IAPIModel
     {
         string ModelName { get; }
 

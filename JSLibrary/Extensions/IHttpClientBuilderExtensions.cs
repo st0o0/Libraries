@@ -2,11 +2,12 @@
 using JSLibrary.AuthenticationHandlers.CacheManagers.Interfaces;
 using JSLibrary.AuthenticationHandlers.Credentials.Interfaces;
 using JSLibrary.AuthenticationHandlers.DelegatingHandlers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Net.Http;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace JSLibrary.Extensions
 {
     public static class IHttpClientBuilderExtensions
     {

@@ -9,38 +9,38 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Extensions
 {
-    public static class IApiLogicBaseExtensions
+    public static class IAPILogicBaseExtensions
     {
         //many
-        public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<int> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task<IEnumerable<ModelType>> GetManyAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, IEnumerable<int> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
             return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.GetAsync(item, cancellationToken), cancellationToken);
         }
 
-        public static async Task<IEnumerable<ModelType>> PostManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task<IEnumerable<ModelType>> PostManyAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
             return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.PostAsync(item, cancellationToken), cancellationToken);
         }
 
-        public static async Task<IEnumerable<ModelType>> PutManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task<IEnumerable<ModelType>> PutManyAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
             return await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.PutAsync(item, cancellationToken), cancellationToken);
         }
 
-        public static async Task DeleteManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task DeleteManyAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, IEnumerable<ModelType> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
             await ParallelTask.TaskManyAsync(items, async item => await apiLogicBase.DeleteAsync(item, cancellationToken), cancellationToken);
         }
 
-        public static async Task DownloadManyAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, IEnumerable<(ModelType model, Stream stream)> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task DownloadManyAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, IEnumerable<(ModelType model, Stream stream)> items, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
@@ -48,7 +48,7 @@ namespace JSLibrary.Extensions
         }
 
         // Download
-        public static async Task<Stream> DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task<byte[]> DownloadAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, ModelType model, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -59,10 +59,10 @@ namespace JSLibrary.Extensions
 
             HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeApiPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             httpResponse.EnsureSuccessStatusCode();
-            return await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
+            return await httpResponse.Content.ReadAsByteArrayAsync(cancellationToken);
         }
 
-        public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task DownloadAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -77,7 +77,7 @@ namespace JSLibrary.Extensions
             await download.CopyToAsync(destination, cancellationToken);
         }
 
-        public static async Task DownloadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task DownloadAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, ModelType model, Stream destination, IProgress<double> progress, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -102,7 +102,7 @@ namespace JSLibrary.Extensions
         }
 
         // Upload
-        public static async Task<ModelType> UploadAsync<ModelType>(this IApiLogicBase<ModelType> apiLogicBase, MultipartFormDataContent content, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
+        public static async Task<ModelType> UploadAsync<ModelType>(this IAPILogicBase<ModelType> apiLogicBase, MultipartFormDataContent content, CancellationToken cancellationToken = default) where ModelType : class, IAPIModel
         {
             ArgumentNullException.ThrowIfNull(content, nameof(content));
 

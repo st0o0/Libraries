@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.FileCaches
 {
-    public class FileCache<ModelType, ApiLogicType> : IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IApiLogicBase<ModelType> where ModelType : class, IFileCacheModel
+    public class FileCache<ModelType, ApiLogicType> : IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IAPILogicBase<ModelType> where ModelType : class, IFileCacheModel
     {
         public FileCache(ApiLogicType apiLogicBase, string folderName = "Cache")
         {
