@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <Reference Include="FlickrNet">
-      <HintPath>..\used_dlls\FlickrNet.dll</HintPath>
+      <HintPath>..\..\used_dlls\FlickrNet.dll</HintPath>
     </Reference>
   </ItemGroup>
 
