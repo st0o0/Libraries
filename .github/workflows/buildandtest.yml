@@ -41,8 +41,8 @@ jobs:
           dotnet --list-sdks
           dotnet --list-runtimes
       
-      -name: Show docker info
-       run: |
+      - name: Show docker info
+        run: |
           docker ps -a   
       
       - name: Build with dotnet
