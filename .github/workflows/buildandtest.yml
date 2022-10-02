@@ -30,7 +30,7 @@ jobs:
            - 6388:6379     
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .Net SDK 6.0.x
         uses: actions/setup-dotnet@v3
         with:
