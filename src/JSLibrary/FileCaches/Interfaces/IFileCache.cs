@@ -5,19 +5,19 @@ using JSLibrary.Logics.Api.Interfaces;
 
 namespace JSLibrary.FileCaches.Interfaces
 {
-    public interface IFileCache<ModelType, ApiLogicType> where ApiLogicType : class, IAPILogicBase<ModelType> where ModelType : class, IFileCacheModel
+    public interface IFileCache<TModel, TModelKey, TAPILogicBase> where TAPILogicBase : class, IAPILogicBase<TModel, TModelKey> where TModel : class, IFileCacheModel<TModelKey> where TModelKey : IEquatable<TModelKey>
     {
-        Task DownloadAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task DownloadAsync(TModel model, CancellationToken cancellationToken = default);
 
-        Task DownloadAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default);
+        Task DownloadAsync(TModel model, IProgress<double> progress, CancellationToken cancellationToken = default);
 
-        Task<string> GetFilePathAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task<string> GetFilePathAsync(TModel model, CancellationToken cancellationToken = default);
 
-        Task<string> GetFilePathAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default);
+        Task<string> GetFilePathAsync(TModel model, IProgress<double> progress, CancellationToken cancellationToken = default);
 
-        Task<byte[]> GetByteArrayAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task<byte[]> GetByteArrayAsync(TModel model, CancellationToken cancellationToken = default);
 
-        Task<byte[]> GetByteArrayAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default);
+        Task<byte[]> GetByteArrayAsync(TModel model, IProgress<double> progress, CancellationToken cancellationToken = default);
 
         void CheckForClean(TimeSpan timeSpan);
     }

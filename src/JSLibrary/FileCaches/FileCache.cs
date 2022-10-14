@@ -12,11 +12,11 @@ using Microsoft.Extensions.Logging;
 
 namespace JSLibrary.FileCaches
 {
-    public class FileCache<ModelType, APILogicType> : IFileCache<ModelType, APILogicType> where APILogicType : class, IAPILogicBase<ModelType> where ModelType : class, IFileCacheModel
+    public class FileCache<TModel, TModelKey, TAPILogicBase> : IFileCache<TModel, TModelKey, TAPILogicBase> where TAPILogicBase : class, IAPILogicBase<TModel, TModelKey> where TModel : class, IFileCacheModel<TModelKey> where TModelKey : IEquatable<TModelKey>
     {
         private readonly FileSystemWatcher _watcher;
 
-        public FileCache(ILogger<FileCache<ModelType, APILogicType>> logger, APILogicType apiLogicBase, IEasyCachingProvider easyCachingProvider, string folderName = "Cache")
+        public FileCache(ILogger<FileCache<TModel, TModelKey, TAPILogicBase>> logger, TAPILogicBase apiLogicBase, IEasyCachingProvider easyCachingProvider, string folderName = "Cache")
         {
             this.Logger = logger;
             this.APILogicBase = apiLogicBase;
@@ -30,13 +30,13 @@ namespace JSLibrary.FileCaches
 
         protected ILogger Logger { get; init; }
 
-        protected APILogicType APILogicBase { get; init; }
+        protected TAPILogicBase APILogicBase { get; init; }
 
         protected IEasyCachingProvider EasyCachingProvider { get; init; }
 
         public string FolderName { get; }
 
-        public async Task DownloadAsync(ModelType model, CancellationToken cancellationToken = default)
+        public async Task DownloadAsync(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -45,7 +45,7 @@ namespace JSLibrary.FileCaches
             await this.DownloadAsync(model, filepath, cancellationToken);
         }
 
-        public async Task DownloadAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
+        public async Task DownloadAsync(TModel model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
             ArgumentNullException.ThrowIfNull(progress, nameof(progress));
@@ -55,7 +55,7 @@ namespace JSLibrary.FileCaches
             await this.DownloadAsync(model, filepath, progress, cancellationToken);
         }
 
-        public async Task<string> GetFilePathAsync(ModelType model, CancellationToken cancellationToken = default)
+        public async Task<string> GetFilePathAsync(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -65,7 +65,7 @@ namespace JSLibrary.FileCaches
             return filepath;
         }
 
-        public async Task<string> GetFilePathAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
+        public async Task<string> GetFilePathAsync(TModel model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
             ArgumentNullException.ThrowIfNull(progress, nameof(progress));
@@ -76,7 +76,7 @@ namespace JSLibrary.FileCaches
             return filepath!;
         }
 
-        public async Task<byte[]> GetByteArrayAsync(ModelType model, CancellationToken cancellationToken = default)
+        public async Task<byte[]> GetByteArrayAsync(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -88,7 +88,7 @@ namespace JSLibrary.FileCaches
             return ms.ToArray();
         }
 
-        public async Task<byte[]> GetByteArrayAsync(ModelType model, IProgress<double> progress, CancellationToken cancellationToken = default)
+        public async Task<byte[]> GetByteArrayAsync(TModel model, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
             ArgumentNullException.ThrowIfNull(progress, nameof(progress));
@@ -118,7 +118,7 @@ namespace JSLibrary.FileCaches
 
         private string GetCachePath() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), this.FolderName);
 
-        private async Task DownloadAsync(ModelType model, string filepath, CancellationToken cancellationToken = default)
+        private async Task DownloadAsync(TModel model, string filepath, CancellationToken cancellationToken = default)
         {
             if (!File.Exists(filepath))
             {
@@ -135,7 +135,7 @@ namespace JSLibrary.FileCaches
             }
         }
 
-        private async Task DownloadAsync(ModelType model, string filepath, IProgress<double> progress, CancellationToken cancellationToken = default)
+        private async Task DownloadAsync(TModel model, string filepath, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             if (!File.Exists(filepath))
             {
@@ -155,7 +155,7 @@ namespace JSLibrary.FileCaches
         // new FileCache with EasyCaching as BytesSafe
         // TODO: Timer mit einem Event zum Checken ob die Datei gebraucht wird
 
-        private async Task<byte[]> GetByteArrayAsyncV2(ModelType model, CancellationToken cancellationToken = default)
+        private async Task<byte[]> GetByteArrayAsyncV2(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
 
@@ -168,7 +168,7 @@ namespace JSLibrary.FileCaches
             return (await this.EasyCachingProvider.GetAsync<byte[]>(model.FileName, cancellationToken)!).Value;
         }
 
-        private async Task<string> GetFilePathAsyncV2(ModelType model, CancellationToken cancellationToken = default)
+        private async Task<string> GetFilePathAsyncV2(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model);
 

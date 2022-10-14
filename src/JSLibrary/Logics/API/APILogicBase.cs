@@ -1,12 +1,11 @@
-﻿using JSLibrary.Extensions;
-using JSLibrary.Logics.Api.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using JSLibrary.Extensions;
 using JSLibrary.Logics.Api.Interfaces;
+using JSLibrary.Logics.Interfaces;
 
 namespace JSLibrary.Logics.Api
 {
@@ -22,9 +21,9 @@ namespace JSLibrary.Logics.Api
             this.RelativeAPIPath = modelName.ToLower();
             this.DownloadPath = "download/";
             this.UploadPath = "upload/";
-            if (!this.RelativeApiPath.EndsWith("/"))
+            if (!this.RelativeAPIPath.EndsWith("/"))
             {
-                this.RelativeApiPath += "/";
+                this.RelativeAPIPath += "/";
             }
         }
 
@@ -38,7 +37,7 @@ namespace JSLibrary.Logics.Api
 
         public virtual async Task<IEnumerable<TModel>> GetAsync(CancellationToken cancellationToken = default)
         {
-            return await HttpClient.GetFromJsonAsync<IEnumerable<TModel>>(this.RelativeApiPath, cancellationToken);
+            return await HttpClient.GetFromJsonAsync<IEnumerable<TModel>>(this.RelativeAPIPath, cancellationToken);
         }
 
         public virtual async Task<TModel> GetAsync(TModelKey id, CancellationToken cancellationToken = default)
@@ -57,7 +56,7 @@ namespace JSLibrary.Logics.Api
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            HttpResponseMessage response = await HttpClient.PostAsJsonAsync(this.RelativeApiPath, model, cancellationToken);
+            HttpResponseMessage response = await HttpClient.PostAsJsonAsync(this.RelativeAPIPath, model, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<TModel>(cancellationToken);
         }
@@ -69,7 +68,7 @@ namespace JSLibrary.Logics.Api
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeApiPath + $"{model.Id}", model, cancellationToken);
+            HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeAPIPath + $"{model.Id}", model, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<TModel>(cancellationToken);
         }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Interfaces
 {
-    public interface IIdentifierModel<TKey> where TKey : IEquatable<TKey>
+    public interface IIdentifierModel<TKey> : IEquatable<TKey>
     {
-        TKey Id { get; init; }
+        TKey Id { get; }
     }
 }
