@@ -153,7 +153,6 @@ namespace JSLibrary.FileCaches
         }
 
         // new FileCache with EasyCaching as BytesSafe
-
         // TODO: Timer mit einem Event zum Checken ob die Datei gebraucht wird
 
         private async Task<byte[]> GetByteArrayAsyncV2(ModelType model, CancellationToken cancellationToken = default)
