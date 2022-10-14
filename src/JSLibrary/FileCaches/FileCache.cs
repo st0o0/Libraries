@@ -7,7 +7,6 @@ using EasyCaching.Core;
 using JSLibrary.Extensions;
 using JSLibrary.FileCaches.Interfaces;
 using JSLibrary.Logics.Api.Interfaces;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace JSLibrary.FileCaches

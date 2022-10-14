@@ -1,6 +1,5 @@
-﻿using JSLibrary.Logics.Api.Interfaces;
+﻿using System;
 using JSLibrary.Logics.Interfaces;
-using System;
 
 namespace JSLibrary.FileCaches.Interfaces
 {
