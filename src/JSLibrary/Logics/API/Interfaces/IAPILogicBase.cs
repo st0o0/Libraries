@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using JSLibrary.Logics.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace JSLibrary.Logics.Api.Interfaces
 {
-    public interface IAPILogicBase<ModelType> : IAPILogic where ModelType : class, IAPIModel
+    public interface IAPILogicBase<TModel, TModelKey> : IAPILogic where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
     {
         string ModelName { get; }
 
@@ -14,14 +16,14 @@ namespace JSLibrary.Logics.Api.Interfaces
 
         string DownloadPath { get; }
 
-        Task<IEnumerable<ModelType>> GetAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<TModel>> GetAsync(CancellationToken cancellationToken = default);
 
-        Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default);
+        Task<TModel> GetAsync(TModelKey id, CancellationToken cancellationToken = default);
 
-        Task<ModelType> PostAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task<TModel> PostAsync(TModel model, CancellationToken cancellationToken = default);
 
-        Task<ModelType> PutAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task<TModel> PutAsync(TModel model, CancellationToken cancellationToken = default);
 
-        Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default);
+        Task DeleteAsync(TModel model, CancellationToken cancellationToken = default);
     }
 }

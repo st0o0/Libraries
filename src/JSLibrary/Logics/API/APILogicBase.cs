@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JSLibrary.Extensions;
+using JSLibrary.Logics.Api.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -8,7 +10,7 @@ using JSLibrary.Logics.Api.Interfaces;
 
 namespace JSLibrary.Logics.Api
 {
-    public class APILogicBase<ModelType> : APILogic, IAPILogicBase<ModelType> where ModelType : class, IAPIModel
+    public class APILogicBase<TModel, TModelKey> : APILogic, IAPILogicBase<TModel, TModelKey> where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
     {
         public APILogicBase(string modelName, string httpClientName, IHttpClientFactory contextType) : this(modelName, contextType.CreateClient(httpClientName))
         {
@@ -20,7 +22,10 @@ namespace JSLibrary.Logics.Api
             this.RelativeAPIPath = modelName.ToLower();
             this.DownloadPath = "download/";
             this.UploadPath = "upload/";
-            if (!this.RelativeAPIPath.EndsWith("/")) { this.RelativeAPIPath += "/"; }
+            if (!this.RelativeApiPath.EndsWith("/"))
+            {
+                this.RelativeApiPath += "/";
+            }
         }
 
         public string ModelName { get; }
@@ -31,48 +36,48 @@ namespace JSLibrary.Logics.Api
 
         public string DownloadPath { get; }
 
-        public virtual async Task<IEnumerable<ModelType>> GetAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TModel>> GetAsync(CancellationToken cancellationToken = default)
         {
-            return await HttpClient.GetFromJsonAsync<IEnumerable<ModelType>>(this.RelativeAPIPath, cancellationToken);
+            return await HttpClient.GetFromJsonAsync<IEnumerable<TModel>>(this.RelativeApiPath, cancellationToken);
         }
 
-        public virtual async Task<ModelType> GetAsync(int id, CancellationToken cancellationToken = default)
+        public virtual async Task<TModel> GetAsync(TModelKey id, CancellationToken cancellationToken = default)
         {
-            if (id == 0)
+            if (id == null || (id is Guid value && value == Guid.Empty))
             {
                 throw new ArgumentNullException(nameof(id));
             }
-            return await HttpClient.GetFromJsonAsync<ModelType>(this.RelativeAPIPath + $"{id}", cancellationToken);
+            return await HttpClient.GetFromJsonAsync<TModel>(this.RelativeAPIPath + $"{id}", cancellationToken);
         }
 
-        public virtual async Task<ModelType> PostAsync(ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task<TModel> PostAsync(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
-            if (model.Id == 0)
+            if (model.Id == null || (model.Id is Guid value && value == Guid.Empty))
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            HttpResponseMessage response = await HttpClient.PostAsJsonAsync(this.RelativeAPIPath, model, cancellationToken);
+            HttpResponseMessage response = await HttpClient.PostAsJsonAsync(this.RelativeApiPath, model, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken);
+            return await response.Content.ReadFromJsonAsync<TModel>(cancellationToken);
         }
 
-        public virtual async Task<ModelType> PutAsync(ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task<TModel> PutAsync(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
-            if (model.Id == 0)
+            if (model.Id == null || (model.Id is Guid value && value == Guid.Empty))
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeAPIPath + $"{model.Id}", model, cancellationToken);
+            HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeApiPath + $"{model.Id}", model, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<ModelType>(cancellationToken);
+            return await response.Content.ReadFromJsonAsync<TModel>(cancellationToken);
         }
 
-        public virtual async Task DeleteAsync(ModelType model, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(TModel model, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(model, nameof(model));
-            if (model.Id == 0)
+            if (model.Id == null || (model.Id is Guid value && value == Guid.Empty))
             {
                 throw new ArgumentNullException(nameof(model));
             }

@@ -13,7 +13,7 @@ namespace JSLibrary.Logics.Business
             this.DataContext = dBContext;
         }
 
-        public DBContextType DataContext { get; }
+        public DBContextType DataContext { get; init; }
 
         public DateTime GetTime()
         {
@@ -27,12 +27,12 @@ namespace JSLibrary.Logics.Business
 
         public void SaveChanges()
         {
-            DataContext.SaveChanges();
+            this.DataContext.SaveChanges();
         }
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await DataContext.SaveChangesAsync(cancellationToken);
+            await this.DataContext.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()
