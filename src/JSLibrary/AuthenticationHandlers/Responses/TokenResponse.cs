@@ -6,8 +6,8 @@ namespace JSLibrary.AuthenticationHandlers.Responses
     {
         public string AccessToken { get; set; }
 
-        public string Scheme { get; set; }
-
         public long ExpirationInSeconds { get; set; }
+
+        public string Scheme { get; set; }
     }
 }

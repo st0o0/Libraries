@@ -61,7 +61,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentException(null, nameof(model));
             }
 
-            HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeAPIPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            HttpResponseMessage httpResponse = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeAPIPath}/{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             httpResponse.EnsureSuccessStatusCode();
             return await httpResponse.Content.ReadAsByteArrayAsync(cancellationToken);
         }
@@ -75,7 +75,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentException(null, nameof(model));
             }
 
-            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeAPIPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeAPIPath}/{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
             await download.CopyToAsync(destination, cancellationToken);
@@ -90,7 +90,7 @@ namespace JSLibrary.Extensions
                 throw new ArgumentException(null, nameof(model));
             }
 
-            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeAPIPath}{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            HttpResponseMessage response = await apiLogicBase.HttpClient.GetAsync($"{apiLogicBase.RelativeAPIPath}/{apiLogicBase.DownloadPath}{model.Id}", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
             long? contentLength = response.Content.Headers.ContentLength;
             using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -110,7 +110,7 @@ namespace JSLibrary.Extensions
         {
             ArgumentNullException.ThrowIfNull(content, nameof(content));
 
-            HttpResponseMessage responseMessage = await apiLogicBase.HttpClient.PostAsync($"{apiLogicBase.RelativeAPIPath}{apiLogicBase.UploadPath}", content, cancellationToken);
+            HttpResponseMessage responseMessage = await apiLogicBase.HttpClient.PostAsync($"{apiLogicBase.RelativeAPIPath}/{apiLogicBase.UploadPath}", content, cancellationToken);
             responseMessage.EnsureSuccessStatusCode();
             return await responseMessage.Content.ReadFromJsonAsync<TModel>(cancellationToken);
         }
@@ -122,7 +122,7 @@ namespace JSLibrary.Extensions
             ArgumentNullException.ThrowIfNull(propertyName, nameof(propertyName));
 
             Type modelType = typeof(TModel);
-            TIncludeModel includeModel = await apiLogicBase.HttpClient.GetFromJsonAsync<TIncludeModel>($"{apiLogicBase.RelativeAPIPath}{model.Id}/{typeof(TIncludeModel).Name.ToLower()}", cancellationToken);
+            TIncludeModel includeModel = await apiLogicBase.HttpClient.GetFromJsonAsync<TIncludeModel>($"{apiLogicBase.RelativeAPIPath}/{model.Id}/{typeof(TIncludeModel).Name.ToLower()}", cancellationToken);
             PropertyInfo includeModelPropertyInfo = modelType.GetProperty(propertyName);
 
             if (includeModelPropertyInfo == null)
@@ -152,7 +152,7 @@ namespace JSLibrary.Extensions
             ArgumentNullException.ThrowIfNull(model, nameof(model));
             ArgumentNullException.ThrowIfNull(propertyName, nameof(propertyName));
 
-            IEnumerable<TIncludeModel> includeModels = await apiLogicBase.HttpClient.GetFromJsonAsync<IEnumerable<TIncludeModel>>($"{apiLogicBase.RelativeAPIPath}{model.Id}/{typeof(TIncludeModel).Name.ToLower()}", cancellationToken);
+            IEnumerable<TIncludeModel> includeModels = await apiLogicBase.HttpClient.GetFromJsonAsync<IEnumerable<TIncludeModel>>($"{apiLogicBase.RelativeAPIPath}/{model.Id}/{typeof(TIncludeModel).Name.ToLower()}", cancellationToken);
 
             Type modelType = model.GetType();
 

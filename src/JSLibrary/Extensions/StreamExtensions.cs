@@ -17,10 +17,12 @@ namespace JSLibrary.Extensions
             {
                 throw new ArgumentException("Has to be readable", nameof(source));
             }
+
             if (!destination.CanWrite)
             {
                 throw new ArgumentException("Has to be writable", nameof(destination));
             }
+
             if (bufferSize < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
@@ -29,6 +31,7 @@ namespace JSLibrary.Extensions
             byte[] buffer = new byte[bufferSize];
             double totalBytesRead = 0;
             int bytesRead;
+
             while ((bytesRead = source.Read(buffer, 0, buffer.Length)) != 0)
             {
                 await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);

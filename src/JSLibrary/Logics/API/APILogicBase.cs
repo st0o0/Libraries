@@ -19,12 +19,16 @@ namespace JSLibrary.Logics.Api
         {
             this.ModelName = modelName;
             this.RelativeAPIPath = modelName.ToLower();
-            this.DownloadPath = "download/";
-            this.UploadPath = "upload/";
-            if (!this.RelativeAPIPath.EndsWith("/"))
-            {
-                this.RelativeAPIPath += "/";
-            }
+            this.DownloadPath = "download";
+            this.UploadPath = "upload";
+        }
+
+        protected APILogicBase(string modelName, HttpClient httpClient, string downloadPath, string uploadPath) : base(httpClient)
+        {
+            this.ModelName = modelName;
+            this.RelativeAPIPath = modelName.ToLower();
+            this.DownloadPath = downloadPath.ToLower();
+            this.UploadPath = uploadPath.ToLower();
         }
 
         public string ModelName { get; }
@@ -46,7 +50,7 @@ namespace JSLibrary.Logics.Api
             {
                 throw new ArgumentNullException(nameof(id));
             }
-            return await HttpClient.GetFromJsonAsync<TModel>(this.RelativeAPIPath + $"{id}", cancellationToken);
+            return await HttpClient.GetFromJsonAsync<TModel>(this.RelativeAPIPath + $"/{id}", cancellationToken);
         }
 
         public virtual async Task<TModel> PostAsync(TModel model, CancellationToken cancellationToken = default)
@@ -68,7 +72,7 @@ namespace JSLibrary.Logics.Api
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeAPIPath + $"{model.Id}", model, cancellationToken);
+            HttpResponseMessage response = await HttpClient.PutAsJsonAsync(this.RelativeAPIPath + $"/{model.Id}", model, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<TModel>(cancellationToken);
         }
@@ -80,7 +84,7 @@ namespace JSLibrary.Logics.Api
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            HttpResponseMessage response = await HttpClient.DeleteAsJsonAsync(this.RelativeAPIPath + $"{model.Id}", model, cancellationToken);
+            HttpResponseMessage response = await HttpClient.DeleteAsJsonAsync(this.RelativeAPIPath + $"/{model.Id}", model, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
     }

@@ -4,8 +4,8 @@
     {
         string AccessToken { get; set; }
 
-        string Scheme { get; set; }
-
         long ExpirationInSeconds { get; set; }
+
+        string Scheme { get; set; }
     }
 }

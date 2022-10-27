@@ -15,60 +15,52 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
 {
     public class AuthenticationDelegatingHandler : DelegatingHandler
     {
-        private readonly string tokenEndpoint;
+        private readonly string _tokenEndpoint;
+        private readonly string _refreshEndpoint;
+        private readonly bool _canRefresh;
 
-        private readonly IClientCredentials clientCredentials;
-        private readonly IAccessTokenCacheManager accessTokensCacheManager;
-        private readonly HttpClient accessControlHttpClient;
+        private readonly IClientCredentials _clientCredentials;
+        private readonly IAccessTokenCacheManager _accessTokensCacheManager;
+        private readonly HttpClient _accessControlHttpClient;
 
-        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
-        public AuthenticationDelegatingHandler(IAccessTokenCacheManager accessTokensCacheManager, IClientCredentials clientCredentials, string basePath, string tokenEndpoint)
+        public AuthenticationDelegatingHandler(IAccessTokenCacheManager accessTokensCacheManager, IClientCredentials clientCredentials, string basePath, string tokenEndpoint, string refreshEndpoint, bool canRefresh = false)
         {
-            this.accessTokensCacheManager = accessTokensCacheManager;
-            this.clientCredentials = clientCredentials;
-            this.tokenEndpoint = tokenEndpoint;
-            this.accessControlHttpClient = new HttpClient { BaseAddress = new Uri(basePath) };
+            this._accessTokensCacheManager = accessTokensCacheManager;
+            this._clientCredentials = clientCredentials;
+            this._tokenEndpoint = tokenEndpoint;
+            this._refreshEndpoint = refreshEndpoint;
+            this._accessControlHttpClient = new HttpClient { BaseAddress = new Uri(basePath) };
 
-            if (this.accessControlHttpClient.BaseAddress == null)
+            if (this._accessControlHttpClient.BaseAddress == null)
             {
                 throw new Exception($"{nameof(HttpClient.BaseAddress)} should be set to Identity Server URL");
             }
 
-            if (!this.accessControlHttpClient.BaseAddress.AbsoluteUri.EndsWith("/"))
+            if (!this._accessControlHttpClient.BaseAddress.AbsoluteUri.EndsWith("/"))
             {
-                this.accessControlHttpClient.BaseAddress = new Uri(this.accessControlHttpClient.BaseAddress.AbsoluteUri + "/");
-            }
-
-            if (!this.tokenEndpoint.EndsWith("/"))
-            {
-                this.tokenEndpoint += "/";
+                this._accessControlHttpClient.BaseAddress = new Uri(this._accessControlHttpClient.BaseAddress.AbsoluteUri + "/");
             }
         }
 
-        public AuthenticationDelegatingHandler(IAccessTokenCacheManager accessTokensCacheManager, IClientCredentials clientCredentials, HttpClient httpClient, string tokenEndpoint)
+        public AuthenticationDelegatingHandler(IAccessTokenCacheManager accessTokensCacheManager, IClientCredentials clientCredentials, HttpClient httpClient, string tokenEndpoint, string refreshEndpoint, bool canRefresh = false)
         {
-            this.accessTokensCacheManager = accessTokensCacheManager;
-            this.clientCredentials = clientCredentials;
-            this.accessControlHttpClient = httpClient;
+            this._accessTokensCacheManager = accessTokensCacheManager;
+            this._clientCredentials = clientCredentials;
+            this._accessControlHttpClient = httpClient;
+            this._tokenEndpoint = tokenEndpoint;
+            this._refreshEndpoint = refreshEndpoint;
+            this._canRefresh = canRefresh;
 
-            if (this.accessControlHttpClient.BaseAddress == null)
+            if (this._accessControlHttpClient.BaseAddress == null)
             {
                 throw new Exception($"{nameof(HttpClient.BaseAddress)} should be set to Identity Server URL");
             }
 
-            if (this.accessControlHttpClient.BaseAddress?.AbsoluteUri.EndsWith("/") == false)
+            if (this._accessControlHttpClient.BaseAddress?.AbsoluteUri.EndsWith("/") == false)
             {
-                this.accessControlHttpClient.BaseAddress = new Uri(this.accessControlHttpClient.BaseAddress.AbsoluteUri + "/");
-            }
-
-            if (!tokenEndpoint.EndsWith("/"))
-            {
-                this.tokenEndpoint = tokenEndpoint + "/";
-            }
-            else
-            {
-                this.tokenEndpoint = tokenEndpoint;
+                this._accessControlHttpClient.BaseAddress = new Uri(this._accessControlHttpClient.BaseAddress.AbsoluteUri + "/");
             }
         }
 
@@ -83,26 +75,27 @@ namespace JSLibrary.AuthenticationHandlers.DelegatingHandlers
 
         private async Task<ITokenResponse> GetTokenAsync(CancellationToken cancellationToken = default)
         {
-            await this.semaphoreSlim.WaitAsync(cancellationToken);
+            await this._semaphoreSlim.WaitAsync(cancellationToken);
             try
             {
-                ITokenResponse token = accessTokensCacheManager.GetToken(clientCredentials.ClientId);
+                ITokenResponse token = _accessTokensCacheManager.GetToken(_clientCredentials.ClientId);
+
                 if (token == null)
                 {
-                    token = await GetNewTokenAsync(clientCredentials, cancellationToken);
-                    accessTokensCacheManager.AddOrUpdateToken(clientCredentials.ClientId, token);
+                    token = await GetNewTokenAsync(_clientCredentials, cancellationToken);
+                    _accessTokensCacheManager.AddOrUpdateToken(_clientCredentials.ClientId, token);
                 }
                 return token;
             }
             finally
             {
-                this.semaphoreSlim.Release();
+                this._semaphoreSlim.Release();
             }
         }
 
         private async Task<ITokenResponse> GetNewTokenAsync(IClientCredentials credentials, CancellationToken cancellationToken = default)
         {
-            HttpResponseMessage response = await accessControlHttpClient.PostAsJsonAsync(tokenEndpoint, credentials, cancellationToken);
+            HttpResponseMessage response = await _accessControlHttpClient.PostAsJsonAsync(_tokenEndpoint, credentials, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 ITokenResponse tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken: cancellationToken);

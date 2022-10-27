@@ -64,7 +64,7 @@ namespace JSLibrary.Extensions
             }
         }
 
-        public static void UpdateMany<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
+        public static void UpdateMany<TModel, TModelKey, TDBContext>(this IBusinessLogicBase<TModel, TModelKey, TDBContext> businessLogic, IEnumerable<TModel> items) where TDBContext : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
@@ -74,7 +74,7 @@ namespace JSLibrary.Extensions
             }
         }
 
-        public static async Task DeleteManyAsync<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
+        public static async Task DeleteManyAsync<TModel, TModelKey, TDBContext>(this IBusinessLogicBase<TModel, TModelKey, TDBContext> businessLogic, IEnumerable<TModel> items, CancellationToken cancellationToken = default) where TDBContext : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
@@ -84,7 +84,7 @@ namespace JSLibrary.Extensions
             }
         }
 
-        public static void DeleteMany<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
+        public static void DeleteMany<TModel, TModelKey, TDBContext>(this IBusinessLogicBase<TModel, TModelKey, TDBContext> businessLogic, IEnumerable<TModel> items) where TDBContext : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
