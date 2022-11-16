@@ -11,11 +11,11 @@ namespace JSLibrary.Logics.Api
 {
     public class APILogicBase<TModel, TModelKey> : APILogic, IAPILogicBase<TModel, TModelKey> where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
     {
-        public APILogicBase(string modelName, string httpClientName, IHttpClientFactory contextType) : this(modelName, contextType.CreateClient(httpClientName))
+        public APILogicBase(string modelName, string httpClientName, IHttpClientFactory httpClientFactory) : this(modelName, httpClientFactory.CreateClient(httpClientName))
         {
         }
 
-        public APILogicBase(string modelName, HttpClient contextType) : base(contextType)
+        public APILogicBase(string modelName, HttpClient httpClient) : base(httpClient)
         {
             this.ModelName = modelName;
             this.RelativeAPIPath = modelName.ToLower();
