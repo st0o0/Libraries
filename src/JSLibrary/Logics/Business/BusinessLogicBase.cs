@@ -14,60 +14,62 @@ namespace JSLibrary.Logics.Business
         {
         }
 
-        public virtual void Add(TModel model)
+        public virtual TModelKey Add(TModel model)
         {
-            this.DataContext.Set<TModel>().Add(model);
-            this.SaveChanges();
+            DataContext.Set<TModel>().Add(model);
+            SaveChanges();
+            return model.Id;
         }
 
-        public virtual async Task AddAsync(TModel model, CancellationToken cancellationToken = default)
+        public virtual async Task<TModelKey> AddAsync(TModel model, CancellationToken cancellationToken = default)
         {
-            this.DataContext.Set<TModel>().Add(model);
-            await this.SaveChangesAsync(cancellationToken);
+            DataContext.Set<TModel>().Add(model);
+            await SaveChangesAsync(cancellationToken);
+            return model.Id;
         }
 
         public virtual void Delete(TModel model)
         {
-            this.DataContext.Set<TModel>().Remove(model);
-            this.SaveChanges();
+            DataContext.Set<TModel>().Remove(model);
+            SaveChanges();
         }
 
         public virtual async Task DeleteAsync(TModel model, CancellationToken cancellationToken = default)
         {
-            this.DataContext.Set<TModel>().Remove(model);
-            await this.SaveChangesAsync(cancellationToken);
+            DataContext.Set<TModel>().Remove(model);
+            await SaveChangesAsync(cancellationToken);
         }
 
         public virtual TModel Get(TModelKey id)
         {
-            return this.DataContext.Set<TModel>().Find(id);
+            return DataContext.Set<TModel>().Find(id);
         }
 
         public virtual async Task<TModel> GetAsync(TModelKey id, CancellationToken cancellationToken = default)
         {
-            return await this.DataContext.Set<TModel>().FindAsync(new object[] { id }, cancellationToken: cancellationToken);
+            return await DataContext.Set<TModel>().FindAsync(new object[] { id }, cancellationToken: cancellationToken);
         }
 
         public virtual IQueryable<TModel> Load()
         {
-            return this.DataContext.Set<TModel>();
+            return DataContext.Set<TModel>();
         }
 
         public virtual async Task<IQueryable<TModel>> LoadAsync(CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => { return this.Load(); }, cancellationToken);
+            return await Task.Run(Load, cancellationToken);
         }
 
         public virtual void Update(TModel model)
         {
-            this.DataContext.Set<TModel>().Update(model);
-            this.SaveChanges();
+            DataContext.Set<TModel>().Update(model);
+            SaveChanges();
         }
 
         public virtual async Task UpdateAsync(TModel model, CancellationToken cancellationToken = default)
         {
-            this.DataContext.Set<TModel>().Update(model);
-            await this.SaveChangesAsync(cancellationToken);
+            DataContext.Set<TModel>().Update(model);
+            await SaveChangesAsync(cancellationToken);
         }
     }
 }

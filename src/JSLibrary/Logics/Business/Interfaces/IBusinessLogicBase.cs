@@ -9,9 +9,9 @@ namespace JSLibrary.Logics.Business.Interfaces
 {
     public interface IBusinessLogicBase<TModel, TModelKey, TDBContext> : IBusinessLogic<TDBContext> where TModel : class, IIdentifierModel<TModelKey> where TDBContext : DbContext where TModelKey : IEquatable<TModelKey>
     {
-        void Add(TModel model);
+        TModelKey Add(TModel model);
 
-        Task AddAsync(TModel model, CancellationToken cancellationToken = default);
+        Task<TModelKey> AddAsync(TModel model, CancellationToken cancellationToken = default);
 
         void Update(TModel model);
 

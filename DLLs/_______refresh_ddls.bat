@@ -1,3 +1,3 @@
 @echo off
 
-xcopy /y "..\src\JSLibrary\bin\Release\net6.0\JSLibrary.dll"
+xcopy /y "..\src\JSLibrary\bin\Release\net7.0\JSLibrary.dll"

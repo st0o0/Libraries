@@ -10,24 +10,30 @@ namespace JSLibrary.Extensions
 {
     public static class IBusinessLogicBaseExtensions
     {
-        public static async Task AddManyAsync<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
+        public static async Task<IEnumerable<TModelKey>> AddManyAsync<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items, CancellationToken cancellationToken = default) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
+            List<TModelKey> results = new();
             foreach (TModel model in items)
             {
-                await businessLogic.AddAsync(model, cancellationToken);
+                results.Add(await businessLogic.AddAsync(model, cancellationToken));
             }
+
+            return results;
         }
 
-        public static void AddMany<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
+        public static IEnumerable<TModelKey> AddMany<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModel> items) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
+            List<TModelKey> results = new();
             foreach (TModel model in items)
             {
-                businessLogic.Add(model);
+                results.Add(businessLogic.Add(model));
             }
+
+            return results;
         }
 
         public static async Task<IEnumerable<TModel>> GetManyAsync<TModel, TModelKey, DBContextType>(this IBusinessLogicBase<TModel, TModelKey, DBContextType> businessLogic, IEnumerable<TModelKey> ids, CancellationToken cancellationToken = default) where DBContextType : DbContext where TModel : class, IIdentifierModel<TModelKey> where TModelKey : IEquatable<TModelKey>
